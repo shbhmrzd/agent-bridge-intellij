@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.2 — 2026-09-26
+
+- Add the public support email to plugin metadata and support documentation.
+- Refresh the packaged listing description, clarify multi-file review, and include setup/support links.
+- No changes to chat, authentication or editing behavior.
+
 ## 0.9.1 — 2026-09-26
 
 - Place the attachment × directly after each file/folder name, without surrounding brackets or borders.

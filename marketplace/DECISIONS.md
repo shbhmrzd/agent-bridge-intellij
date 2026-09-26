@@ -1,6 +1,6 @@
 # Publication decisions
 
-Confirmed for the 0.9.0 shareable preview:
+Current decisions for the 0.9.2 preview:
 
 | Item | Decision |
 | --- | --- |
@@ -11,9 +11,9 @@ Confirmed for the 0.9.0 shareable preview:
 | Support | https://github.com/shbhmrzd/agent-bridge-intellij/issues |
 | License | MIT; see the repository LICENSE |
 | Plugin price | Free; provider access and charges remain separate |
-| Public support email | Not configured; GitHub only for now |
+| Public support email | [shbhmrzd@gmail.com](mailto:shbhmrzd@gmail.com) |
 
-JetBrains requires a working vendor website and email for Marketplace submission. The repository URL is configured; a monitored public email is still needed before submission. Do not invent an address or use a GitHub noreply address as support.
+JetBrains requires a working vendor website and email for Marketplace submission. The repository URL and `shbhmrzd@gmail.com` are configured in the plugin descriptor. Use the same email in the Marketplace vendor profile.
 
 Agent Bridge is independent of OpenAI, Anthropic, GitHub and JetBrains. The logo is an original vector asset and uses no provider marks. Final Marketplace name/ID availability and acceptance are determined during submission; a successful binary verifier run does not reserve them.
 

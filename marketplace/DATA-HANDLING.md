@@ -1,6 +1,6 @@
-# Data handling in Agent Bridge 0.9.0
+# Data handling in Agent Bridge 0.9.2
 
-Maintainer: [shbhmrzd](https://github.com/shbhmrzd). Support is currently through [GitHub Issues](https://github.com/shbhmrzd/agent-bridge-intellij/issues). This disclosure describes the plugin implementation. It is not a statement about the provider’s own retention or training policies.
+Maintainer: [shbhmrzd](https://github.com/shbhmrzd). Support is available through [GitHub Issues](https://github.com/shbhmrzd/agent-bridge-intellij/issues) or [shbhmrzd@gmail.com](mailto:shbhmrzd@gmail.com). This disclosure describes the plugin implementation. It is not a statement about the provider’s own retention or training policies.
 
 ## When you send a message
 
@@ -36,4 +36,4 @@ Choose the provider and model, disable automatic project context, remove explici
 
 ## Support
 
-Use [GitHub Issues](https://github.com/shbhmrzd/agent-bridge-intellij/issues) for sanitized public reports. No private support email is configured. Never request authentication tokens, one-time codes, private CLI credential files or full unredacted project archives in a support issue.
+Use [GitHub Issues](https://github.com/shbhmrzd/agent-bridge-intellij/issues) for sanitized public reports. For email support, contact [shbhmrzd@gmail.com](mailto:shbhmrzd@gmail.com). Never request authentication tokens, one-time codes, private CLI credential files or full unredacted project archives in a support issue.

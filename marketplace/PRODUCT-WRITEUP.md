@@ -46,7 +46,7 @@ The sidebar enables automatic project discovery by default. Selection chat start
 
 Click the compact control, for example **Claude · Sonnet ▾**. The Provider submenu changes the CLI/account connection; model choices apply through that provider.
 
-| Provider | Choices in 0.9.1 | Sign-in approach |
+| Provider | Choices in 0.9.2 | Sign-in approach |
 | --- | --- | --- |
 | Claude Code | CLI default, Sonnet, Opus, Haiku, custom model ID | Installed Claude CLI browser login; organization SSO option |
 | OpenAI Codex | CLI default, models returned by the CLI, custom model ID | Codex-managed ChatGPT browser or device-code flow |
@@ -103,7 +103,7 @@ The plugin is a conversational assistant with explicit edit review. It does not 
 
 **What happens when I close inline chat?** Its active session is cancelled and its visible transcript is discarded. Closing a chat does not erase provider-side or CLI-managed history.
 
-**What is verified today?** The 0.9.1 build passed 214 Java checks, 5 Python checks and binary/API verification on four IDE builds without muted rules. Native UI and live-provider smoke testing remain separate; see [compatibility evidence](../docs/COMPATIBILITY.md).
+**What is verified today?** The 0.9.2 build passed 214 Java checks, 5 Python checks and binary/API verification on four IDE builds without muted rules. Native UI and live-provider smoke testing remain separate; see [compatibility evidence](../docs/COMPATIBILITY.md).
 
 ## First useful task
 

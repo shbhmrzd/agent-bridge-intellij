@@ -1,9 +1,9 @@
-# Publishing Agent Bridge 0.9.1
+# Publishing Agent Bridge 0.9.2
 
 ## Prepared
 
 - Public ID: `io.github.shbhmrzd.agentbridge`; old-preview [migration instructions](../docs/MIGRATION.md).
-- Publisher: `shbhmrzd`; website/source: https://github.com/shbhmrzd/agent-bridge-intellij.
+- Publisher: `shbhmrzd`; public support email: `shbhmrzd@gmail.com`; website/source: https://github.com/shbhmrzd/agent-bridge-intellij.
 - MIT license in the repository and packaged JAR.
 - Description, change notes, setup instructions, data disclosure and an original SVG logo.
 - Labeled component-preview media generated from the current UI with synthetic content.
@@ -12,7 +12,7 @@
 
 ## Still needed before Marketplace submission
 
-- Supply a monitored **public support email** in the vendor profile. Add it to the descriptor as well if you want it displayed as IDE contact metadata, then rebuild and verify that ZIP. Current support is GitHub-only. [JetBrains requires a valid vendor website and email](https://plugins.jetbrains.com/docs/marketplace/jetbrains-marketplace-approval-guidelines.html).
+- Set `shbhmrzd@gmail.com` in your Marketplace vendor profile; it is already included in the plugin descriptor. [JetBrains requires a valid vendor website and email](https://plugins.jetbrains.com/docs/marketplace/jetbrains-marketplace-approval-guidelines.html).
 - Check final name/ID availability through the submission flow; the verifier does not reserve either.
 - Run the [native smoke checklist](../docs/RELEASE-CHECKS.md) against the exact release ZIP. Record IDE, OS and provider CLI versions. Include real Codex and Copilot requests and login flows; fake transport tests are not live-provider coverage.
 - Capture actual final-IDE gallery images using the synthetic demo project. Existing component previews are labeled and must not be presented as live screenshots.

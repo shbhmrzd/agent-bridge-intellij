@@ -18,11 +18,11 @@ The plugin ZIP contains no maintainer credentials. Each installation uses that m
 
 ## 2. Install the plugin
 
-**Before the Marketplace listing is approved:** use an installable ZIP from [Releases](https://github.com/shbhmrzd/agent-bridge-intellij/releases) when available, a successful [Actions run](https://github.com/shbhmrzd/agent-bridge-intellij/actions/workflows/compatibility.yml), or a local build. Extract the Actions artifact wrapper to get the plugin ZIP; GitHub’s source-code ZIP is not an installable plugin. Then open Settings → Plugins → gear → Install Plugin from Disk. Select the ZIP itself and restart when prompted. The development artifact for this pack is `build/agent-bridge-0.9.1.zip`.
+**Before the Marketplace listing is approved:** use an installable ZIP from [Releases](https://github.com/shbhmrzd/agent-bridge-intellij/releases) when available, a successful [Actions run](https://github.com/shbhmrzd/agent-bridge-intellij/actions/workflows/compatibility.yml), or a local build. Extract the Actions artifact wrapper to get the plugin ZIP; GitHub’s source-code ZIP is not an installable plugin. Then open Settings → Plugins → gear → Install Plugin from Disk. Select the ZIP itself and restart when prompted. The development artifact for this pack is `build/agent-bridge-0.9.2.zip`.
 
 **After approval:** open Settings → Plugins → Marketplace, search for the final plugin name, verify the publisher, and install. This route is conditional: the draft pack does not imply that the listing is already live.
 
-**Upgrading from 0.8.x:** uninstall the old preview first, then install 0.9.1. The plugin ID changed; see [migration instructions](../docs/MIGRATION.md).
+**Upgrading from 0.8.x:** uninstall the old preview first, then install 0.9.2. The plugin ID changed; see [migration instructions](../docs/MIGRATION.md).
 
 ## 3. Select the CLI connection
 
@@ -133,3 +133,5 @@ If a file changed after you sent the request, the plugin refuses to apply the st
 | Where did my chat go? | IDE chat history is not restored after restart. Closing inline chat discards its transcript. CLI/provider history is separate. |
 
 When reporting a problem, include the plugin version, IDE build, OS, provider, CLI version, steps and a sanitized error message. Remove credentials, browser login URLs, device codes, private paths and proprietary source.
+
+Support: [GitHub Issues](https://github.com/shbhmrzd/agent-bridge-intellij/issues) or [shbhmrzd@gmail.com](mailto:shbhmrzd@gmail.com).

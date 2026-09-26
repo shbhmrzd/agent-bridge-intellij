@@ -1,8 +1,8 @@
 <idea-plugin>
   <id>io.github.shbhmrzd.agentbridge</id>
   <name>Agent Bridge</name>
-  <version>0.9.1</version>
-  <vendor url="https://github.com/shbhmrzd/agent-bridge-intellij">shbhmrzd</vendor>
+  <version>0.9.2</version>
+  <vendor email="shbhmrzd@gmail.com" url="https://github.com/shbhmrzd/agent-bridge-intellij">shbhmrzd</vendor>
   <description><![CDATA[
 <h2>Ask about your code. Review changes. Stay in IntelliJ.</h2>
 <p>Agent Bridge brings conversations with Claude, OpenAI Codex and GitHub Copilot into IntelliJ IDEA through their installed command-line tools. Use your existing eligible provider account without a JetBrains AI subscription.</p>
@@ -13,13 +13,13 @@
 <li><b>Chat beside selected code:</b> open a small composer from the editor selection and continue the conversation there.</li>
 <li><b>Project context:</b> attach files and folders through IntelliJ’s project picker, or enable a bounded search for related project files.</li>
 <li><b>Compact model selection:</b> choose your provider and model in one menu. Codex can load available choices from its CLI; Claude offers familiar model aliases and a custom model option.</li>
-<li><b>Reviewable changes:</b> inspect supported suggestions in IntelliJ’s diff view, apply individual changes or the full proposal, and use Undo.</li>
+<li><b>Reviewable changes:</b> inspect supported suggestions in IntelliJ’s diff view, apply the reviewed proposal, and use Undo. Multi-file proposals apply together.</li>
 <li><b>Conversation continuity:</b> continue with recent context or start fresh when switching provider or model.</li>
 <li><b>Keyboard first:</b> Enter sends; Shift+Enter inserts a new line.</li>
-<li><b>Simple account controls:</b> sign in, check login or change configuration from the settings gear.</li>
+<li><b>Account controls:</b> sign in, check login or change configuration from the settings gear.</li>
 </ul>
 <h3>Your CLI, your account</h3>
-<p>Install at least one supported CLI separately. Agent Bridge launches the provider’s authentication flow and uses that CLI’s account configuration. Claude and Copilot use their CLI sign-in flows; Codex offers browser sign-in and a device-code alternative. Provider credentials remain managed by the CLI.</p>
+<p>Install at least one supported CLI separately. Agent Bridge launches the provider’s authentication flow and uses that CLI’s account configuration. Claude and Copilot use their CLI sign-in flows; Codex offers browser sign-in and a device-code alternative. Each installation uses that user’s local CLI account or API configuration; no maintainer credentials are bundled. Provider credentials remain managed by the CLI.</p>
 <p>No separate JetBrains AI subscription is required. Provider eligibility, subscriptions, usage limits and any API charges still apply. Installing the plugin does not grant free or unlimited model access.</p>
 <h3>Try a first question</h3>
 <ol>
@@ -28,6 +28,7 @@
 <li>Ask: “Explain this file and identify one edge case.”</li>
 <li>For a change, ask for a reviewable fix. Use <b>Review changes</b> when a supported proposal appears, inspect the diff, then apply it.</li>
 </ol>
+<p><a href="https://github.com/shbhmrzd/agent-bridge-intellij/blob/main/marketplace/GETTING-STARTED.md">Setup guide</a> · <a href="https://github.com/shbhmrzd/agent-bridge-intellij/issues">Report a problem</a> · <a href="https://github.com/shbhmrzd/agent-bridge-intellij">Source code</a> · <a href="https://github.com/shbhmrzd/agent-bridge-intellij/blob/main/marketplace/DATA-HANDLING.md">Data handling</a></p>
 <h3>Current scope</h3>
 <p>This preview targets IntelliJ IDEA 2024.3.2.2 through 2026.2.x (builds 243.23654.189 through 262.*). Its declared dependencies do not require Ultimate features. A working provider CLI and eligible account are required.</p>
 <p>Automatic context uses bounded text-based retrieval; it does not upload the entire project. Provider tools may read additional project files under their own policies. Code supplied as context is processed by the selected provider according to its configuration and terms.</p>
@@ -35,6 +36,7 @@
 <p>Agent Bridge is an independent integration, not an official OpenAI, Anthropic, GitHub or JetBrains product.</p>
   ]]></description>
   <change-notes><![CDATA[
+    <p>0.9.2: add the public support email and refresh the listing description and setup links. Chat behavior is unchanged.</p>
     <p>0.9.1: file and folder removal controls sit immediately after their names, with no surrounding brackets or border. Hover feedback and descriptive tooltips remain.</p>
     <p>First shareable preview under the public plugin ID io.github.shbhmrzd.agentbridge.</p>
     <ul>
