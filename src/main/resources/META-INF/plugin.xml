@@ -1,0 +1,66 @@
+<idea-plugin>
+  <id>io.github.shbhmrzd.agentbridge</id>
+  <name>Agent Bridge</name>
+  <version>0.9.0</version>
+  <vendor url="https://github.com/shbhmrzd/agent-bridge-intellij">shbhmrzd</vendor>
+  <description><![CDATA[
+<h2>Ask about your code. Review changes. Stay in IntelliJ.</h2>
+<p>Agent Bridge brings conversations with Claude, OpenAI Codex and GitHub Copilot into IntelliJ IDEA through their installed command-line tools. Use your existing eligible provider account without a JetBrains AI subscription.</p>
+<p>Start with the file you are editing, select a method for a focused question, or add files and folders from your project. Read the answer in a compact chat and review supported code suggestions before applying them.</p>
+<h3>Built around asking and reading</h3>
+<ul>
+<li><b>Current-file context:</b> include the open editor buffer, including unsaved changes.</li>
+<li><b>Chat beside selected code:</b> open a small composer from the editor selection and continue the conversation there.</li>
+<li><b>Project context:</b> attach files and folders through IntelliJ’s project picker, or enable a bounded search for related project files.</li>
+<li><b>Compact model selection:</b> choose your provider and model in one menu. Codex can load available choices from its CLI; Claude offers familiar model aliases and a custom model option.</li>
+<li><b>Reviewable changes:</b> inspect supported suggestions in IntelliJ’s diff view, apply individual changes or the full proposal, and use Undo.</li>
+<li><b>Conversation continuity:</b> continue with recent context or start fresh when switching provider or model.</li>
+<li><b>Keyboard first:</b> Enter sends; Shift+Enter inserts a new line.</li>
+<li><b>Simple account controls:</b> sign in, check login or change configuration from the settings gear.</li>
+</ul>
+<h3>Your CLI, your account</h3>
+<p>Install at least one supported CLI separately. Agent Bridge launches the provider’s authentication flow and uses that CLI’s account configuration. Claude and Copilot use their CLI sign-in flows; Codex offers browser sign-in and a device-code alternative. Provider credentials remain managed by the CLI.</p>
+<p>No separate JetBrains AI subscription is required. Provider eligibility, subscriptions, usage limits and any API charges still apply. Installing the plugin does not grant free or unlimited model access.</p>
+<h3>Try a first question</h3>
+<ol>
+<li>Open a project and a source file, then open the Agent Bridge tool window.</li>
+<li>Choose your provider, open the gear and sign in if needed.</li>
+<li>Ask: “Explain this file and identify one edge case.”</li>
+<li>For a change, ask for a reviewable fix. Use <b>Review changes</b> when a supported proposal appears, inspect the diff, then apply it.</li>
+</ol>
+<h3>Current scope</h3>
+<p>This preview targets IntelliJ IDEA 2024.3.2.2 through 2026.2.x (builds 243.23654.189 through 262.*). Its declared dependencies do not require Ultimate features. A working provider CLI and eligible account are required.</p>
+<p>Automatic context uses bounded text-based retrieval; it does not upload the entire project. Provider tools may read additional project files under their own policies. Code supplied as context is processed by the selected provider according to its configuration and terms.</p>
+<p>Suggestions currently edit existing attached text files. File creation, deletion, renaming, inline ghost-text completion and restoring IDE chat history after restart are not supported. The selected range focuses a question; review the diff to check the actual edit scope.</p>
+<p>Agent Bridge is an independent integration, not an official OpenAI, Anthropic, GitHub or JetBrains product.</p>
+  ]]></description>
+  <change-notes><![CDATA[
+    <p>First shareable preview under the public plugin ID io.github.shbhmrzd.agentbridge.</p>
+    <ul>
+      <li>Chat about current files or selected code; attach project files and folders.</li>
+      <li>Use existing Claude, Codex and Copilot CLI accounts with compact provider/model controls.</li>
+      <li>Continue with context or start fresh when switching provider or model.</li>
+      <li>Press Enter to send and Shift+Enter for a new line.</li>
+      <li>Review supported edits in the IDE diff viewer and apply with Undo.</li>
+    </ul>
+    <p>Users of 0.8.x must uninstall the preview plugin before installing this build; the plugin ID changed.</p>
+  ]]></change-notes>
+  <idea-version since-build="243.23654.189" until-build="262.*"/>
+  <depends>com.intellij.modules.platform</depends>
+  <depends optional="true" config-file="agent-bridge-terminal.xml">org.jetbrains.plugins.terminal</depends>
+  <extensions defaultExtensionNs="com.intellij">
+    <editorFactoryListener implementation="dev.agentbridge.SelectionChatListener"/>
+    <toolWindow id="Agent Bridge" anchor="right" factoryClass="dev.agentbridge.BridgeToolWindow"/>
+  </extensions>
+  <actions>
+    <action id="AgentBridge.InlineChat" class="dev.agentbridge.InlineChatAction" text="Chat About Selection" description="Open Agent Bridge beside selected code">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+    <action id="AgentBridge.AddContext" class="dev.agentbridge.AddContextAction" text="Add to Agent Bridge" description="Attach selected project files and folders to chat">
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+    </action>
+    <action id="AgentBridge.Ask" class="dev.agentbridge.AskAgentAction" text="Ask Agent Bridge" description="Chat about the current file and selected code">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+    </action>
+  </actions>
+</idea-plugin>

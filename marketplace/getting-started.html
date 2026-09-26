@@ -1,0 +1,13 @@
+<h2>Start a conversation about your code</h2>
+<ol>
+<li><b>Install a provider CLI.</b> Follow the official installation instructions for <a href="https://code.claude.com/docs/en/setup">Claude Code</a>, <a href="https://developers.openai.com/codex/cli/">OpenAI Codex</a> or <a href="https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli">GitHub Copilot CLI</a>. Check that your account supports the chosen tool.</li>
+<li><b>Open your project in IntelliJ IDEA 2024.3.2.2 through 2026.2.x.</b> Open a source file, then choose View → Tool Windows → Agent Bridge.</li>
+<li><b>Choose a provider.</b> Click the provider/model control at the bottom of the composer. If the CLI cannot be found, open the gear → Settings and enter its absolute executable path. In a terminal, <code>command -v claude</code>, <code>command -v codex</code> or <code>command -v copilot</code> can help locate it.</li>
+<li><b>Sign in.</b> Open the gear → Sign in. Complete the provider’s browser or CLI authentication steps. For Codex, use the device-code alternative if the browser flow cannot complete. Return to the plugin and choose Check login. Do not paste passwords or tokens into chat.</li>
+<li><b>Ask a question.</b> Keep the current-file checkbox selected and ask “Explain this file and identify an edge case.” Press Enter to send or Shift+Enter for a new line.</li>
+<li><b>Add context when needed.</b> Use + Files to select project files or folders. You can also select items in the Project pane and choose Add to Agent Bridge. The gear’s Find related project files option adds bounded, relevant context automatically.</li>
+<li><b>Ask about a selection.</b> Select code in the editor and use Chat About Selection. Its conversation stays attached to the captured file and range.</li>
+<li><b>Review a proposed change.</b> Request a specific fix. When Review changes appears, inspect the diff and apply the desired changes. Undo is supported. If the file has changed since the request, ask for a fresh proposal.</li>
+</ol>
+<p>Model availability and usage limits come from your provider account. Default uses CLI configuration. Provider installation and authentication are required even if you are already signed into a separate desktop application.</p>
+<p>If sign-in stalls, inspect the provider login terminal, complete any pending prompt and check login again. If a model is unavailable, choose Default or an account-supported model. Closing inline chat or restarting the IDE does not preserve that IDE conversation.</p>

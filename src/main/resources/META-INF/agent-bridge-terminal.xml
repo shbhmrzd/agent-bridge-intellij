@@ -1,0 +1,5 @@
+<idea-plugin>
+  <extensions defaultExtensionNs="com.intellij">
+    <applicationService serviceInterface="dev.agentbridge.LoginLauncher" serviceImplementation="dev.agentbridge.TerminalLoginLauncher"/>
+  </extensions>
+</idea-plugin>
