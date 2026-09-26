@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.1 — 2026-09-26
+
+- Place the attachment × directly after each file/folder name, without surrounding brackets or borders.
+- Retain hover feedback and provide a clear removal tooltip and accessible label.
+
 ## 0.9.0 — 2026-09-26
 
 First shareable preview with the MIT license and public plugin ID `io.github.shbhmrzd.agentbridge`.

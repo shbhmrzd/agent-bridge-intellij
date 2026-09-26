@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>io.github.shbhmrzd.agentbridge</id>
   <name>Agent Bridge</name>
-  <version>0.9.0</version>
+  <version>0.9.1</version>
   <vendor url="https://github.com/shbhmrzd/agent-bridge-intellij">shbhmrzd</vendor>
   <description><![CDATA[
 <h2>Ask about your code. Review changes. Stay in IntelliJ.</h2>
@@ -35,6 +35,7 @@
 <p>Agent Bridge is an independent integration, not an official OpenAI, Anthropic, GitHub or JetBrains product.</p>
   ]]></description>
   <change-notes><![CDATA[
+    <p>0.9.1: file and folder removal controls sit immediately after their names, with no surrounding brackets or border. Hover feedback and descriptive tooltips remain.</p>
     <p>First shareable preview under the public plugin ID io.github.shbhmrzd.agentbridge.</p>
     <ul>
       <li>Chat about current files or selected code; attach project files and folders.</li>

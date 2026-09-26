@@ -1,4 +1,4 @@
-# Compatibility validation — Agent Bridge 0.9.0
+# Compatibility validation — Agent Bridge 0.9.1
 
 Validated on 26 September 2026. The release ZIP is compiled against Community build **IC-243.23654.189** using Java 21 bytecode.
 
@@ -15,7 +15,7 @@ The **same ZIP** passed JetBrains Plugin Verifier 1.410 on all four targets, wit
 
 No deprecated, internal, experimental or incompatible API usage was reported. The gate also rejects missing reports, compatibility warnings, invalid descriptors, improper override-only usage and non-extendable API usage. Production and test compilation treats deprecation/removal warnings as errors.
 
-The source-controlled [verification summary](verification-0.9.0.json) records the release ZIP’s SHA-256, targets, plugin identity and results. Full local reports are under `build/verification/run-hdpq8trq/reports/`; build outputs are intentionally excluded from Git. CI uploads reports as workflow artifacts.
+The source-controlled [verification summary](verification-0.9.1.json) records the release ZIP’s SHA-256, targets, plugin identity and results. Full local reports are under `build/verification-0.9.1/run-9igh6e33/reports/`; build outputs are intentionally excluded from Git. CI uploads reports as workflow artifacts.
 
 ## Automated checks
 

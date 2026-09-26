@@ -435,10 +435,12 @@ final class ChatPanel implements Disposable {
             try { path = relative(attached); } catch (IllegalArgumentException moved) { path = attached.getName() + " (outside project)"; }
             if (path.isEmpty()) path = project.getName();
             JLabel label = new JLabel(path + (attached.isDirectory() ? "/" : "")); label.setForeground(ChatSurface.muted()); label.setToolTipText(attached.getPath()); chip.add(label, BorderLayout.CENTER);
-            JButton remove = ChatSurface.quiet("×"); remove.setToolTipText("Remove " + attached.getName() + " from future context");
+            JButton remove = ChatSurface.quiet("×"); remove.setToolTipText("Remove " + attached.getName() + " from context");
+            remove.getAccessibleContext().setAccessibleName("Remove " + attached.getName() + " from context");
             remove.setPreferredSize(new Dimension(remove.getFontMetrics(remove.getFont()).charWidth('×') + 20, Math.max(26, label.getPreferredSize().height + 6)));
             remove.addActionListener(e -> { pinned.remove(attached); folders.remove(attached); refreshContext(); }); chip.add(remove, BorderLayout.EAST);
-            chip.setMaximumSize(new Dimension(Integer.MAX_VALUE, chip.getPreferredSize().height)); view.chips.add(chip);
+            chip.setAlignmentX(Component.LEFT_ALIGNMENT);
+            chip.setMaximumSize(chip.getPreferredSize()); view.chips.add(chip);
         }
         view.chips.revalidate(); view.chips.repaint();
     }

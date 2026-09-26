@@ -21,7 +21,7 @@ python3 -m unittest discover -s scripts/tests -v
 
 # Check exactly that archive across installed/extracted SDKs.
 python3 scripts/verify_compatibility.py \
-  --plugin build/agent-bridge-0.9.0.zip \
+  --plugin build/agent-bridge-0.9.1.zip \
   --verifier /path/to/verifier-cli-1.410-all.jar \
   --ide /path/to/idea-IC-243.23654.189 \
   --ide /path/to/current-idea \

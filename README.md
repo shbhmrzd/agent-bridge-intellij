@@ -19,12 +19,12 @@ Agent Bridge is a free, MIT-licensed plugin. It requires no JetBrains AI subscri
 - Review supported changes in IntelliJ’s diff viewer, apply them to editor buffers, and Undo.
 - Press **Enter** to send and **Shift+Enter** for a new line. Cmd/Ctrl+Enter also sends.
 
-## Install the 0.9.0 preview
+## Install the 0.9.1 preview
 
 Requires **IntelliJ IDEA 2024.3.2.2 through 2026.2.x** (builds `243.23654.189` through `262.*`) and at least one installed provider CLI. No Ultimate-only dependency is declared.
 
 1. Get the installable ZIP from [GitHub Releases](https://github.com/shbhmrzd/agent-bridge-intellij/releases) when a release is available. Until then, build it below or download the `installable-plugin` artifact from a successful [compatibility workflow](https://github.com/shbhmrzd/agent-bridge-intellij/actions/workflows/compatibility.yml). Extract the Actions artifact wrapper to find the plugin ZIP; do not install GitHub’s source-code archive.
-2. Open **Settings → Plugins → gear → Install Plugin from Disk**, select `agent-bridge-0.9.0.zip`, and restart if prompted.
+2. Open **Settings → Plugins → gear → Install Plugin from Disk**, select `agent-bridge-0.9.1.zip`, and restart if prompted.
 3. Open **View → Tool Windows → Agent Bridge**, select your provider, and use **gear → Sign in** if needed.
 4. Open a source file and ask: “Explain this file and identify one edge case.”
 
@@ -69,7 +69,7 @@ python3 scripts/build.py --ide /path/to/idea --test
 python3 -m unittest discover -s scripts/tests -v
 ```
 
-On macOS, `--ide` can point to an IntelliJ `.app` or its `Contents` directory. Set `JAVA_HOME` when the IDE runtime lacks a compiler. The output is `build/agent-bridge-0.9.0.zip`. Builds compile against the selected SDK’s libraries without packaging those libraries. Python 3.12+ is needed only for the optional SDK downloader.
+On macOS, `--ide` can point to an IntelliJ `.app` or its `Contents` directory. Set `JAVA_HOME` when the IDE runtime lacks a compiler. The output is `build/agent-bridge-0.9.1.zip`. Builds compile against the selected SDK’s libraries without packaging those libraries. Python 3.12+ is needed only for the optional SDK downloader.
 
 Release artifacts are compiled against the minimum Community SDK. Compilation rejects deprecated/removal-marked APIs, and Plugin Verifier checks the same ZIP against four IDE builds. Tests use fake provider CLIs and make no paid model requests. See [compatibility evidence](docs/COMPATIBILITY.md), [release checks](docs/RELEASE-CHECKS.md), and [contribution instructions](CONTRIBUTING.md). Native IDE/provider smoke tests remain necessary.
 
