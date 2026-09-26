@@ -48,7 +48,7 @@ public final class RenderPreviews {
         g.setColor(new Color(0x2563eb)); g.fillRoundRect(48, 50, 6, 27, 6, 6);
         g.setColor(ink); g.setFont(new Font("SansSerif", Font.BOLD, 17)); g.drawString("AGENT BRIDGE", 70, 71);
         g.setColor(secondary); g.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        g.drawString("0.9.0  •  UI component preview  •  Sample conversation  •  Not a live IDE capture", 48, 771);
+        g.drawString("0.9.1  •  UI component preview  •  Sample conversation  •  Not a live IDE capture", 48, 771);
         g.dispose(); return image;
     }
     private static void prepare(Graphics2D g) {

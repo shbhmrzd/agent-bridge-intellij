@@ -14,13 +14,15 @@ You need a provider account or configuration that permits use of its CLI. Instal
 
 The plugin can reuse an existing CLI login. For Claude and Copilot’s Sign in buttons, enable the bundled Terminal plugin under Settings → Plugins. Codex uses its app-server account flow directly.
 
+The plugin ZIP contains no maintainer credentials. Each installation uses that machine’s selected CLI account/configuration, which determines access and billing. People sharing an operating-system user account may share its saved CLI login. No API key is required to build or run the automated tests.
+
 ## 2. Install the plugin
 
-**Before the Marketplace listing is approved:** download the publisher-provided ZIP, then open Settings → Plugins → gear → Install Plugin from Disk. Select the ZIP itself and restart when prompted. The development artifact for this pack is `build/agent-bridge-0.9.0.zip`.
+**Before the Marketplace listing is approved:** use an installable ZIP from [Releases](https://github.com/shbhmrzd/agent-bridge-intellij/releases) when available, a successful [Actions run](https://github.com/shbhmrzd/agent-bridge-intellij/actions/workflows/compatibility.yml), or a local build. Extract the Actions artifact wrapper to get the plugin ZIP; GitHub’s source-code ZIP is not an installable plugin. Then open Settings → Plugins → gear → Install Plugin from Disk. Select the ZIP itself and restart when prompted. The development artifact for this pack is `build/agent-bridge-0.9.1.zip`.
 
 **After approval:** open Settings → Plugins → Marketplace, search for the final plugin name, verify the publisher, and install. This route is conditional: the draft pack does not imply that the listing is already live.
 
-**Upgrading from 0.8.x:** uninstall the old preview first, then install 0.9.0. The plugin ID changed; see [migration instructions](../docs/MIGRATION.md).
+**Upgrading from 0.8.x:** uninstall the old preview first, then install 0.9.1. The plugin ID changed; see [migration instructions](../docs/MIGRATION.md).
 
 ## 3. Select the CLI connection
 
@@ -29,6 +31,8 @@ Open View → Tool Windows → Agent Bridge. Click the provider/model control be
 Agent Bridge checks common executable locations. If it cannot find your CLI, use **⚙ → Settings** to enter the executable path. On macOS/Linux, `command -v claude`, `command -v codex` or `command -v copilot` can help identify it. On Windows, PowerShell’s `Get-Command claude` (or the relevant CLI name) shows command resolution; Windows runtime support still needs validation for this release.
 
 Use the path to an installed executable, not a shell command with extra arguments. A path visible in your interactive shell may differ from the environment inherited by the IDE.
+
+Check the selected CLI before using the plugin, for example `claude --version` (or `codex --version` / `copilot --version`). Keep the provider tools current. An outdated CLI may list a model that the service refuses to run with that client version.
 
 ## 4. Connect your account
 
@@ -73,7 +77,7 @@ Switching after sending a message offers **Continue with context**, **Start fres
 - Codex: model choices come from the installed CLI’s catalog. Use **Refresh models** in the selector menu if needed.
 - Copilot: choose Default, Auto, or a custom ID obtained from your CLI’s model selector.
 
-A dropdown option does not guarantee account access. Model/provider changes start a new conversation. Current account and organization rules continue to apply.
+A dropdown option does not guarantee account access. Switching starts a new native provider session; **Continue with context** preserves the visible conversation and transfers recent completed exchanges. Current account and organization rules continue to apply.
 
 ## 6. Ask about a file
 
@@ -105,7 +109,7 @@ Ask about the selection. On the first message the popup expands to make room for
 
 Ask explicitly for a reviewable change. When **Review changes** appears, open it and inspect IntelliJ’s diff. For multi-file proposals, choose each file in the review dialog’s dropdown.
 
-Choose **Apply change** or **Apply all changes** only after reviewing the result. Edits go to editor buffers and support IntelliJ Undo; save when ready. Discard removes the pending proposal without applying it.
+Choose **Apply change** or **Apply all changes** only after reviewing the result. Multi-file proposals are applied together; the file dropdown changes the preview and does not select a subset to apply. Edits go to editor buffers and support IntelliJ Undo; save when ready. Discard removes the pending proposal without applying it.
 
 If a file changed after you sent the request, the plugin refuses to apply the stale proposal. Ask for a new one against the latest buffer. New files, renames and deletions are not supported in this version.
 
@@ -113,10 +117,13 @@ If a file changed after you sent the request, the plugin refuses to apply the st
 
 | Symptom | What to try |
 | --- | --- |
+| Failed to load plugin descriptor | Select the actual plugin ZIP, not the GitHub source archive or outer Actions artifact wrapper. |
+| IDE says incompatible | Check Help → About. Supported builds are 243.23654.189 through 262.*. |
 | CLI executable not found | Check ⚙ → Settings and use the resolved executable path. Restart IntelliJ after changing shell installation paths if needed. |
 | Login succeeds, request fails | Check provider entitlement, quota, network/proxy access and CLI version. Saved login is not proof of usable inference access. |
 | Claude/Copilot Sign in cannot open | Enable IntelliJ’s bundled Terminal plugin, or authenticate directly with the CLI. |
 | Codex model menu has only Default/Custom | Check login, inspect the configured Codex executable and retry Refresh models. Default/custom remain usable if discovery is unavailable. |
+| Model requires a newer Codex version | Update the executable configured in Settings using its supported update/install method. Save Settings to close the old session, refresh models and retry. A separate desktop-app update may leave that CLI unchanged. |
 | Model is rejected | Select Default or a model supported by the account. Agent Bridge does not unlock restricted models. |
 | No selection icon | Use one selection in a normal source editor, enable gutter icons, or use Chat About Selection from the context menu. |
 | No Review changes button | The reply may be illustrative code. Ask for a reviewable change to an attached existing file. Invalid proposals are not applied. |

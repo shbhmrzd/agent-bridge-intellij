@@ -18,7 +18,7 @@ Your code stays visible while the response streams into the conversation. Ask a 
 
 ![Sidebar chat with a sample question and reviewable suggestion](assets/01-sidebar-dark.png)
 
-*Component preview from version 0.9.0 with a synthetic conversation, not a live IDE screenshot.*
+*Component preview from version 0.9.1 with a synthetic conversation, not a live IDE screenshot.*
 
 ## Ask beside a selection
 
@@ -46,7 +46,7 @@ The sidebar enables automatic project discovery by default. Selection chat start
 
 Click the compact control, for example **Claude · Sonnet ▾**. The Provider submenu changes the CLI/account connection; model choices apply through that provider.
 
-| Provider | Choices in 0.9.0 | Sign-in approach |
+| Provider | Choices in 0.9.1 | Sign-in approach |
 | --- | --- | --- |
 | Claude Code | CLI default, Sonnet, Opus, Haiku, custom model ID | Installed Claude CLI browser login; organization SSO option |
 | OpenAI Codex | CLI default, models returned by the CLI, custom model ID | Codex-managed ChatGPT browser or device-code flow |
@@ -62,7 +62,7 @@ Click the compact control, for example **Claude · Sonnet ▾**. The Provider su
 
 Ask for a reviewable change, then click **Review changes** beneath the response. Agent Bridge opens IntelliJ’s diff view so you can inspect the proposed result before choosing **Apply change** or **Apply all changes**.
 
-Applied changes use the editor’s Undo mechanism. If a target file has changed since the request, the plugin rejects the stale proposal and preserves your edits. An ordinary code example in a reply is not automatically treated as an applicable patch.
+Multi-file proposals apply together; the dropdown switches the preview, not which changes will be applied. Applied changes use the editor’s Undo mechanism. If a target file has changed since the request, the plugin rejects the stale proposal and preserves your edits. An ordinary code example in a reply is not automatically treated as an applicable patch.
 
 Edits currently target existing, attached text files. Creating, deleting or renaming files is not supported. Selecting code focuses the request; it does not restrict a proposal to those exact lines. Always inspect the diff.
 
@@ -89,7 +89,7 @@ The plugin is a conversational assistant with explicit edit review. It does not 
 
 ## Questions before installing
 
-**Is the AI usage free?** No additional JetBrains AI subscription is required by this plugin. Your provider’s plan, usage limits or API billing still apply. The recommended Marketplace distribution is a free plugin; this does not make provider inference free.
+**Is the AI usage free?** No additional JetBrains AI subscription is required by this plugin. Your provider’s plan, usage limits or API billing still apply. Agent Bridge is free and MIT-licensed; this does not make provider inference free.
 
 **Do I enter API keys into Agent Bridge?** There is no credential-entry field. The installed CLI manages authentication. Existing CLI API-key or enterprise configuration can affect how requests are billed and routed.
 
@@ -103,7 +103,7 @@ The plugin is a conversational assistant with explicit edit review. It does not 
 
 **What happens when I close inline chat?** Its active session is cancelled and its visible transcript is discarded. Closing a chat does not erase provider-side or CLI-managed history.
 
-**What is verified today?** The current build passes 167 automated checks. Those are not a substitute for Marketplace Plugin Verifier results or live compatibility testing. See the release checklist for remaining coverage.
+**What is verified today?** The 0.9.1 build passed 214 Java checks, 5 Python checks and binary/API verification on four IDE builds without muted rules. Native UI and live-provider smoke testing remain separate; see [compatibility evidence](../docs/COMPATIBILITY.md).
 
 ## First useful task
 

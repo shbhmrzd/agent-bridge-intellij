@@ -34,7 +34,18 @@ This preview has not been submitted to or approved by JetBrains Marketplace.
 
 ## Accounts and models
 
-Install and authenticate the provider CLI separately, or use the plugin’s Sign in button after installation. If the command cannot be found, set its absolute path under **gear → Settings**.
+Install one provider CLI first: [Claude Code](https://code.claude.com/docs/en/setup), [OpenAI Codex](https://developers.openai.com/codex/cli/), or [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/set-up-copilot-cli/install-copilot-cli). The plugin does not install these tools for you. Signing into a separate desktop app does not guarantee its standalone CLI is configured.
+
+In IntelliJ’s Terminal, locate and check your chosen CLI, for example:
+
+```sh
+command -v claude
+claude --version
+```
+
+Use `codex` or `copilot` instead for those providers. Copy the resolved executable path into **gear → Settings** if discovery fails. Use an executable path only, without flags or a shell command. Select the provider, use **Sign in** if needed, complete the browser/terminal prompts, and return to chat. See the [provider-by-provider setup guide](marketplace/GETTING-STARTED.md).
+
+**Each installer uses their own local CLI account or API configuration.** The maintainer’s credentials are not bundled in the plugin. Their provider configuration determines billing and access. People using the same operating-system user account may share its saved CLI login.
 
 | Provider | Connection | Model selection |
 | --- | --- | --- |
@@ -60,21 +71,75 @@ Ask for a reviewable change, then choose **Review changes** when a supported pro
 
 Current scope: existing attached text files only. New files, deletes, renames, ghost-text completion and autonomous background editing are not supported. Read [the setup guide](marketplace/GETTING-STARTED.md) for the full workflow and troubleshooting.
 
-## Build and verify
+## Build and test locally
 
-Use **JDK 21+**, Python 3, and an installed or extracted IntelliJ SDK:
+Installing the plugin ZIP does **not** require Git, Python or a separate JDK. These tools are needed only to build from source.
+
+Prerequisites for development:
+
+- **Git**, **Python 3.9+**, and a **JDK with `javac` supporting Java 21**. Python 3.12+ is required only by the optional SDK downloader.
+- An installed or extracted **IntelliJ IDEA SDK** in the supported range, including its `lib/` directory. The bundled Terminal plugin libraries are needed at compile time; no Ultimate subscription is required.
+- A macOS or Linux shell. The current script/fixtures use Unix-style executable paths; native Windows building is not validated.
+- No provider account, CLI installation or API key is needed for automated tests.
+
+Clone the source:
 
 ```sh
-python3 scripts/build.py --ide /path/to/idea --test
+git clone https://github.com/shbhmrzd/agent-bridge-intellij.git
+cd agent-bridge-intellij
+```
+
+Set `IDEA_HOME` to your actual installation. For example, on macOS:
+
+```sh
+export IDEA_HOME="/Applications/IntelliJ IDEA.app/Contents"
+```
+
+On Linux, use the extracted IDE directory containing `lib/` and `product-info.json`, for example `export IDEA_HOME="/opt/idea"`. The build uses the IDE’s compiler when available; otherwise set `JAVA_HOME` to a full JDK installation with `bin/javac`. A JRE alone is insufficient.
+
+Build and run the automated checks from the repository root:
+
+```sh
+python3 scripts/build.py --ide "$IDEA_HOME" --test
 python3 -m unittest discover -s scripts/tests -v
 ```
 
-On macOS, `--ide` can point to an IntelliJ `.app` or its `Contents` directory. Set `JAVA_HOME` when the IDE runtime lacks a compiler. The output is `build/agent-bridge-0.9.1.zip`. Builds compile against the selected SDK’s libraries without packaging those libraries. Python 3.12+ is needed only for the optional SDK downloader.
+Expected results: **214 Java checks**, **5 Python checks**, and `build/agent-bridge-0.9.1.zip`. Checks print their results to the terminal and return a nonzero exit status on failure. The suite uses fake provider processes and performs no paid model requests. Some tests exercise real platform documents/background reads and headless Swing layouts; they do not launch an IDE window. Layout previews are written under `build/`.
 
-Release artifacts are compiled against the minimum Community SDK. Compilation rejects deprecated/removal-marked APIs, and Plugin Verifier checks the same ZIP against four IDE builds. Tests use fake provider CLIs and make no paid model requests. See [compatibility evidence](docs/COMPATIBILITY.md), [release checks](docs/RELEASE-CHECKS.md), and [contribution instructions](CONTRIBUTING.md). Native IDE/provider smoke tests remain necessary.
+For packaging alone, omit `--test`. To keep a build separate, add `--output build/local`. No Gradle/Maven setup or Python package installation is required. SDK libraries are used for compilation and are not bundled in the plugin.
 
-## Support and publishing
+### Try your changes in IntelliJ
+
+1. Use a test IDE profile if you want to keep your everyday plugin setup separate. The build script does not launch a sandbox IDE or install the ZIP automatically.
+2. Install the generated ZIP through **Settings → Plugins → gear → Install Plugin from Disk**, then restart when prompted.
+3. Open the included `marketplace/demo-project` as a directory and `src/TaskQueue.java` as a source file.
+4. For a live smoke test, configure your own provider CLI/account. Ask about the current file, try selection chat, add/remove a file, and test Enter / Shift+Enter.
+5. Ask for a reviewable change, inspect the diff, apply it, and Undo. Live requests use your provider account and may consume quota.
+6. After further edits, rebuild and reinstall the new ZIP. There is no automatic hot reload.
+
+Compilation rejects deprecated/removal-marked APIs. Local builds against a newer SDK are useful for development; builds intended for the full declared range must compile against the minimum Community SDK. See [compatibility evidence](docs/COMPATIBILITY.md) and [API verification commands](docs/RELEASE-CHECKS.md). Headless checks cannot replace native UI/provider smoke testing.
+
+## Contribute
+
+Fork the repository, create a focused branch, and submit a pull request against `main`. Explain the user-visible problem, the change, and what you tested. Include a screenshot for visible UI changes and update the relevant usage documentation. Keep generated ZIPs, classes, logs, SDKs and private account files out of commits.
+
+The main areas are `src/main/java/dev/agentbridge/` (UI, context and providers), `src/main/resources/` (descriptor/icons), `src/test/java/` (checks), and `scripts/` (build/verification). See [CONTRIBUTING.md](CONTRIBUTING.md) and [DESIGN.md](DESIGN.md) for implementation conventions and lifecycle requirements.
+
+## Troubleshooting
+
+| Problem | Next step |
+| --- | --- |
+| Failed to load plugin descriptor | Install `agent-bridge-0.9.1.zip`, not a source-code ZIP or the outer GitHub Actions download wrapper. |
+| IDE says incompatible | Check the exact build under Help → About; the minimum is `243.23654.189` and the maximum declared branch is `262.*`. |
+| CLI not found or login differs from terminal | Set the resolved executable’s absolute path in gear → Settings; the IDE can inherit a different PATH. |
+| Model requires a newer CLI | Update that exact CLI using its supported installer/update command, save Settings to restart the session, then refresh models. Updating a separate desktop app may not update the executable configured in the plugin. |
+| Request rejected despite successful login | Check account entitlement, provider quota, model availability and network access. |
+| Build cannot find javac or IDE classes | Check `JAVA_HOME`, `IDEA_HOME`, and that the IDE includes `lib/` and `plugins/terminal/lib/`. |
+
+More account/context/edit troubleshooting is in the [setup guide](marketplace/GETTING-STARTED.md).
+
+## Support and license
 
 Report reproducible problems through [GitHub Issues](https://github.com/shbhmrzd/agent-bridge-intellij/issues), including plugin, IDE, CLI and model versions. Remove private code, account identifiers and login details from reports. Support is currently public through GitHub; no private support email is configured.
 
-See the [Marketplace preparation pack](marketplace/README.md) for listing text, media, setup instructions and remaining submission steps. Maintained by [shbhmrzd](https://github.com/shbhmrzd), licensed under [MIT](LICENSE).
+Maintained by [shbhmrzd](https://github.com/shbhmrzd), licensed under [MIT](LICENSE).

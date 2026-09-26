@@ -2,7 +2,7 @@
 
 ## Included assets
 
-All four PNGs are **1280 × 800** and rendered from the production 0.9.0 Swing components. Conversations and account state are synthetic. Each slide visibly says it is a component preview, not a live IDE screenshot. No private user screenshots, personal paths, login URLs, credentials or real account identifiers are included.
+All four PNGs are **1280 × 800** and rendered from the production 0.9.1 Swing components. Conversations and account state are synthetic. Each slide visibly says it is a component preview, not a live IDE screenshot. No private user screenshots, personal paths, login URLs, credentials or real account identifiers are included.
 
 | Order | File | Caption |
 | --- | --- | --- |
@@ -13,7 +13,16 @@ All four PNGs are **1280 × 800** and rendered from the production 0.9.0 Swing c
 
 These can support documentation and serve as clearly labeled informational media. For the public listing’s lead screenshot, prefer a fresh live IDE capture of the released ZIP. The previews do not demonstrate actual gutter placement, native diff application or a successful provider request.
 
-The current [approval guidelines](https://plugins.jetbrains.com/docs/marketplace/jetbrains-marketplace-approval-guidelines.html) recommend 1280 × 800 screenshots. Keep the final images consistent in aspect ratio and readable at listing size.
+JetBrains [listing guidance](https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#screenshots) recommends at least 1200 × 760 pixels and consistent aspect ratios. These assets use 1280 × 800. Keep the final images consistent in aspect ratio and readable at listing size.
+
+## Captions for the prepared gallery
+
+- **Ask about your current file:** “Discuss your open code and review a proposed fix. UI component preview with sample content.”
+- **Chat beside selected code:** “Keep the question next to the selected method. UI component preview; editor placement is not shown.”
+- **Choose your own provider:** “Select your provider and model; account settings are under the gear. Sample account state.”
+- **Light theme:** “Read the same chat in a light component theme. Sample content; native IDE rendering may differ.”
+
+Use the files in `assets/` in the listing’s Media section. They are informational slides; do not rename them as live screenshots. Supplement them with real IDE captures to demonstrate the full workflow.
 
 ## Capture real IDE screenshots
 

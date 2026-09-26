@@ -64,4 +64,4 @@ Automated checks cover history bounds, escaping, cancellation/fresh/continue sta
 - Attach an unsaved file, request an edit, review, apply and Undo. Reject an obsolete proposal after changing its buffer.
 - Close the popup/project during a request; confirm owned provider processes exit.
 
-Before Marketplace submission, add the public vendor email and verify name/ID availability. Rebuild after metadata changes. Keep the MIT license in the packaged JAR and inspect the ZIP for test classes, credentials and private files.
+Before Marketplace submission, add the public vendor email to the vendor profile and verify name/ID availability. The descriptor can also carry the contact address for display in the IDE. Rebuild after metadata changes. Keep the MIT license in the packaged JAR and inspect the ZIP for test classes, credentials and private files.

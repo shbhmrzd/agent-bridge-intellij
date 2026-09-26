@@ -4,7 +4,7 @@ Start with a reproducible issue or a small pull request. Describe the user-visib
 
 ## Development
 
-Use JDK 21+, Python 3, and an IntelliJ IDEA SDK. Build and run the offline checks:
+Use a Java 21-capable JDK, Python 3.9+, and an IntelliJ IDEA SDK on macOS or Linux. Follow the [README development walkthrough](README.md#build-and-test-locally) to clone, select your SDK, build, test and install locally. Build and run the offline checks:
 
 ```sh
 python3 scripts/build.py --ide /path/to/idea --test
@@ -12,6 +12,10 @@ python3 -m unittest discover -s scripts/tests -v
 ```
 
 The test suite uses fake provider CLIs and does not make paid model requests. Live checks are explicit opt-ins. Python 3.12+ is required by the optional SDK download helper. See [release checks](docs/RELEASE-CHECKS.md) for minimum-SDK and cross-version verification.
+
+## Pull requests
+
+Fork the repository, branch from `main`, and open a pull request with the problem, resulting behavior, and validation. Add screenshots for UI changes and update usage docs. Real provider tests are optional unless the change requires them; disclose the CLI/model versions and quota usage, and use synthetic code.
 
 ## Standards
 
