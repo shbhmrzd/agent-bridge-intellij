@@ -48,7 +48,7 @@ public final class RenderPreviews {
         g.setColor(new Color(0x2563eb)); g.fillRoundRect(48, 50, 6, 27, 6, 6);
         g.setColor(ink); g.setFont(new Font("SansSerif", Font.BOLD, 17)); g.drawString("AGENT BRIDGE", 70, 71);
         g.setColor(secondary); g.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        g.drawString("0.9.1  •  UI component preview  •  Sample conversation  •  Not a live IDE capture", 48, 771);
+        g.drawString("0.9.2  •  UI component preview  •  Sample conversation  •  Not a live IDE capture", 48, 771);
         g.dispose(); return image;
     }
     private static void prepare(Graphics2D g) {
@@ -77,7 +77,7 @@ public final class RenderPreviews {
     private static void inline(Path output) throws Exception {
         theme(true); BufferedImage image = canvas();
         text(image, 48, 166, 36, true, ink, "Select code.", "Start a conversation.");
-        text(image, 48, 293, 19, false, secondary, "A focused composer with the file", "and selected range attached.", "No account toolbar above the chat.");
+        text(image, 48, 293, 19, false, secondary, "A focused composer with the file", "and selected range attached.", "Ask a follow-up in the same chat.");
         text(image, 48, 471, 15, false, secondary, "Opened from Chat About Selection", "in the IntelliJ editor.");
         component(image, chat(true, true), 540, 80, 680, 625);
         ImageIO.write(image, "png", output.resolve("02-selection-chat.png").toFile());

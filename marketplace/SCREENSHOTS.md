@@ -2,7 +2,7 @@
 
 ## Included assets
 
-All four PNGs are **1280 × 800** and rendered from the production 0.9.1 Swing components. Conversations and account state are synthetic. Each slide visibly says it is a component preview, not a live IDE screenshot. No private user screenshots, personal paths, login URLs, credentials or real account identifiers are included.
+All four PNGs are **1280 × 800** and rendered from the production 0.9.2 Swing components. Conversations and account state are synthetic. Each slide visibly says it is a component preview, not a live IDE screenshot. No private user screenshots, personal paths, login URLs, credentials or real account identifiers are included.
 
 | Order | File | Caption |
 | --- | --- | --- |
