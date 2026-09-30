@@ -21,7 +21,16 @@ final class ModelCatalog {
                 new Option("claude-opus-5-5", "Opus 5.5"), new Option("claude-opus-5", "Opus 5"), new Option("claude-opus-4-6", "Opus 4.6"),
                 new Option("claude-sonnet-5-5", "Sonnet 5.5"), new Option("claude-sonnet-5", "Sonnet 5"), new Option("claude-sonnet-4-6", "Sonnet 4.6"),
                 new Option("claude-haiku-4-5-20251001", "Haiku 4.5"));
-            case Copilot -> List.of(DEFAULT, new Option("auto", "Auto (Copilot chooses)"));
+            // Copilot uses its own model IDs (for example, dots in Claude versions).
+            // https://docs.github.com/en/copilot/reference/copilot-cli-reference/cli-command-reference#supported-models
+            // Documented choices checked 2026-09-30, not a live account entitlement list.
+            case Copilot -> List.of(DEFAULT, new Option("auto", "Auto (Copilot chooses)"),
+                new Option("claude-opus-5.5", "Claude Opus 5.5"), new Option("claude-sonnet-4.6", "Claude Sonnet 4.6"),
+                new Option("claude-haiku-4.5", "Claude Haiku 4.5"), new Option("gpt-6-astra", "GPT-6 Astra"),
+                new Option("gpt-6-sol", "GPT-6 Sol"), new Option("gpt-6-luna", "GPT-6 Luna"),
+                new Option("gpt-5.4", "GPT-5.4"), new Option("gpt-5.3-codex", "GPT-5.3 Codex"),
+                new Option("gemini-3.7-flash", "Gemini 3.7 Flash"), new Option("gemini-3.6-flash", "Gemini 3.6 Flash"),
+                new Option("gemini-3.5-flash", "Gemini 3.5 Flash"));
             case Codex -> List.of(DEFAULT);
         };
     }
@@ -74,6 +83,11 @@ final class ModelCatalog {
             if (id.isEmpty()) continue;
             String label = Json.str(item, "displayName");
             if (label.isBlank() || label.length() > 120 || label.chars().anyMatch(Character::isISOControl)) label = id;
+            // A generic or shared display name must not conceal distinct versions/variants.
+            // Put the exact ID first in that case so the compact selector retains it too.
+            String normalizedId = id.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+            String normalizedLabel = label.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+            if (!normalizedId.equals(normalizedLabel)) label = id + " · " + label;
             options.add(new Option(id, label));
         }
         return List.copyOf(options);

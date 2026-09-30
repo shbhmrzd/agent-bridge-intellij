@@ -187,9 +187,11 @@ final class ChatSurface extends JPanel {
         boolean versionsLabel = false;
         for (int i = 0; i < model.getItemCount(); i++) {
             ModelCatalog.Option option = model.getItemAt(i);
-            if (!versionsLabel && provider.getSelectedItem() == AgentSession.Provider.Claude && option.id().startsWith("claude-")) {
+            if (!versionsLabel && !option.id().isEmpty() && !option.equals(ModelCatalog.CUSTOM)
+                && !option.id().equals("auto") && !option.label().contains("CLI alias")) {
                 menu.addSeparator();
-                JMenuItem versions = menuFont(new JMenuItem("Versions · account access applies"));
+                JMenuItem versions = menuFont(new JMenuItem(provider.getSelectedItem() == AgentSession.Provider.Codex
+                    ? "CLI catalog · account access applies" : "Versions · account access applies"));
                 versions.setEnabled(false); menu.add(versions); versionsLabel = true;
             }
             JRadioButtonMenuItem item = menuFont(new JRadioButtonMenuItem(shorten(option.label(), 60), option.equals(model.getSelectedItem())));

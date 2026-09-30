@@ -1,0 +1,18 @@
+{
+  "plugin": "io.github.shbhmrzd.agentbridge",
+  "version": "0.9.4",
+  "targets": [
+    "IC-243.23654.189",
+    "IU-261.25134.95",
+    "IU-262.10968.63",
+    "IU-263.5701.42"
+  ],
+  "passed": true,
+  "errors": [],
+  "sha256": "20017f690ccf56d56b21165cbd28c1e13655052d021f9b749f2a717551005746",
+  "javaChecks": 248,
+  "pythonChecks": 5,
+  "compiledAgainst": "IC-243.23654.189",
+  "mutedRules": [],
+  "date": "2026-09-30"
+}

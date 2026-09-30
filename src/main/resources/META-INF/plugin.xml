@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>io.github.shbhmrzd.agentbridge</id>
   <name>Agent Bridge</name>
-  <version>0.9.3</version>
+  <version>0.9.4</version>
   <vendor email="shbhmrzd@gmail.com" url="https://github.com/shbhmrzd/agent-bridge-intellij">shbhmrzd</vendor>
   <description><![CDATA[
 <h2>AI coding chat using your existing accounts</h2>
@@ -12,7 +12,7 @@
 <li><b>Current-file context:</b> include the open editor buffer, including unsaved changes.</li>
 <li><b>Chat beside selected code:</b> open a small composer from the editor selection and continue the conversation there.</li>
 <li><b>Project context:</b> attach files and folders through IntelliJ’s project picker, or enable a bounded search for related project files.</li>
-<li><b>Compact model selection:</b> choose your provider and model in one menu. Codex can load available choices from its CLI; Claude offers explicitly versioned choices, labeled CLI aliases and a custom model option.</li>
+<li><b>Compact model selection:</b> choose your provider and model in one menu. Codex loads its CLI catalog with explicit version and variant labels. Claude and Copilot offer documented versioned choices; CLI defaults, aliases and custom model IDs remain available. Account and CLI support determine which choices work.</li>
 <li><b>Reviewable changes:</b> inspect supported suggestions in IntelliJ’s diff view, apply the reviewed proposal, and use Undo. Multi-file proposals apply together.</li>
 <li><b>Conversation continuity:</b> continue with recent context or start fresh when switching provider or model.</li>
 <li><b>Keyboard first:</b> Enter sends; Shift+Enter inserts a new line.</li>
@@ -36,6 +36,7 @@
 <p>Agent Bridge is an independent integration, not an official OpenAI, Anthropic, GitHub or JetBrains product.</p>
   ]]></description>
   <change-notes><![CDATA[
+    <p>0.9.4: preserve exact Codex versions when catalog names are ambiguous, and add documented versioned Copilot choices for Claude, GPT/Codex and Gemini.</p>
     <p>0.9.3: render backtick and tilde code fences during streaming, with shaded code formatting. Add explicitly versioned Claude model choices and label CLI aliases.</p>
     <p>0.9.2: add the public support email and refresh the listing description and setup links. Chat behavior is unchanged.</p>
     <p>0.9.1: file and folder removal controls sit immediately after their names, with no surrounding brackets or border. Hover feedback and descriptive tooltips remain.</p>

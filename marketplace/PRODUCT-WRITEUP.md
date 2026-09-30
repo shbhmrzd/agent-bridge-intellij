@@ -46,11 +46,11 @@ The sidebar enables automatic project discovery by default. Selection chat start
 
 Click the compact control, for example **Claude · Sonnet 5.5 ▾**. The Provider submenu changes the CLI/account connection; model choices apply through that provider.
 
-| Provider | Choices in 0.9.3 | Sign-in approach |
+| Provider | Choices in 0.9.4 | Sign-in approach |
 | --- | --- | --- |
 | Claude Code | CLI default, versioned Opus/Sonnet/Haiku choices, labeled family aliases, custom model ID | Installed Claude CLI browser login; organization SSO option |
-| OpenAI Codex | CLI default, models returned by the CLI, custom model ID | Codex-managed ChatGPT browser or device-code flow |
-| GitHub Copilot CLI | CLI default, Auto, custom model ID | Installed Copilot CLI login in IntelliJ Terminal |
+| OpenAI Codex | CLI default, version/variant names from the CLI catalog, custom model ID | Codex-managed ChatGPT browser or device-code flow |
+| GitHub Copilot CLI | CLI default, Auto, documented Claude/GPT/Codex/Gemini versions, custom model ID | Installed Copilot CLI login in IntelliJ Terminal |
 
 **Default** uses the CLI’s configured setting; it is not a claim about a resolved model version. Account entitlements still determine which choices work. Model selections are remembered per provider. Switching provider or model offers Continue with context, Start fresh, or Cancel.
 
@@ -103,7 +103,7 @@ The plugin is a conversational assistant with explicit edit review. It does not 
 
 **What happens when I close inline chat?** Its active session is cancelled and its visible transcript is discarded. Closing a chat does not erase provider-side or CLI-managed history.
 
-**What is verified today?** The 0.9.3 build passed 236 Java checks, 5 Python checks and binary/API verification on four IDE builds without muted rules. Native UI and live-provider smoke testing remain separate; see [compatibility evidence](../docs/COMPATIBILITY.md).
+**What is verified today?** The 0.9.4 build passed 248 Java checks, 5 Python checks and binary/API verification on four IDE builds without muted rules. Native UI and live-provider smoke testing remain separate; see [compatibility evidence](../docs/COMPATIBILITY.md).
 
 ## First useful task
 

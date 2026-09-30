@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.4 - 2026-09-30
+
+- Keep exact Codex version and variant IDs visible when CLI catalog labels are generic or ambiguous.
+- Add documented Copilot choices for Claude, GPT/Codex and Gemini, using Copilot-specific IDs.
+- Retain Default, Auto, custom IDs and account/CLI availability guidance. Codex still loads its catalog from the CLI.
+
 ## 0.9.3 - 2026-09-30
 
 - Render tilde and backtick code fences as shaded monospace blocks, including indented and longer fences.

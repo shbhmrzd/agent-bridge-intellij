@@ -49,6 +49,19 @@ public final class MarkdownTextTest {
                 if (item instanceof javax.swing.JMenuItem row && row.getText().equals("Opus 5.5")) row.doClick();
             check(((ModelCatalog.Option) surface.model.getSelectedItem()).id().equals("claude-opus-5-5"), "clicking versioned menu row selects the exact ID");
             check(surface.selector.getText().contains("Opus 5.5") && surface.selector.getToolTipText().contains("claude-opus-5-5"), "composer retains version label and exposes exact ID");
+            surface.provider.setSelectedItem(AgentSession.Provider.Copilot); surface.model.removeAllItems();
+            for (var option : ModelCatalog.choices(ModelCatalog.defaults(AgentSession.Provider.Copilot), "")) surface.model.addItem(option);
+            for (String[] choice : new String[][]{{"Claude Opus 5.5", "claude-opus-5.5"}, {"GPT-5.3 Codex", "gpt-5.3-codex"}, {"Gemini 3.7 Flash", "gemini-3.7-flash"}}) {
+                for (var item : surface.selectionMenu().getComponents())
+                    if (item instanceof javax.swing.JMenuItem row && row.getText().equals(choice[0])) row.doClick();
+                check(((ModelCatalog.Option) surface.model.getSelectedItem()).id().equals(choice[1])
+                    && surface.selector.getText().contains(choice[0]), "Copilot version menu selects and displays " + choice[0]);
+            }
+            surface.provider.setSelectedItem(AgentSession.Provider.Codex); surface.model.removeAllItems();
+            var discovered = new ModelCatalog.Option("gpt-5.4", "gpt-5.4 · GPT"); surface.model.addItem(ModelCatalog.DEFAULT); surface.model.addItem(discovered);
+            for (var item : surface.selectionMenu().getComponents())
+                if (item instanceof javax.swing.JMenuItem row && row.getText().equals(discovered.label())) row.doClick();
+            check(surface.selector.getText().contains("gpt-5.4") && surface.selector.getToolTipText().contains("gpt-5.4"), "Codex generic display name retains exact version in composer");
         });
         System.out.println("Passed " + passed + " Markdown rendering checks.");
     }

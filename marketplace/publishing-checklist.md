@@ -1,4 +1,4 @@
-# Publishing Agent Bridge 0.9.3
+# Publishing Agent Bridge 0.9.4
 
 ## Prepared
 
