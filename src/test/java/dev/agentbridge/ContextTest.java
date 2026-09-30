@@ -150,7 +150,7 @@ public final class ContextTest {
                 check(providers.getItemCount() == 3 && providers.getItem(0).getText().equals("OpenAI Codex") && providers.getItem(2).getText().equals("GitHub Copilot"), "provider menu retains complete names");
                 providers.getItem(1).doClick();
                 for (Component item : scaled.selectionMenu().getComponents())
-                    if (item instanceof JMenuItem menuItem && menuItem.getText().equals("Sonnet")) menuItem.doClick();
+                    if (item instanceof JMenuItem menuItem && menuItem.getText().equals("Sonnet (CLI alias)")) menuItem.doClick();
                 check(scaled.provider.getSelectedItem() == AgentSession.Provider.Claude && ((ModelCatalog.Option) scaled.model.getSelectedItem()).id().equals("sonnet")
                     && scaled.selector.getText().contains("Claude · Sonnet"), "menu selection updates provider/model state and visible summary");
                 boolean[] clicked = {false}; scaled.settings.addActionListener(e -> clicked[0] = true);

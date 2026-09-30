@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.3 - 2026-09-30
+
+- Render tilde and backtick code fences as shaded monospace blocks, including indented and longer fences.
+- Format streamed responses at a bounded refresh rate; keep structured edit payloads hidden.
+- Add explicitly versioned Claude choices and label family aliases separately. Show exact model IDs in tooltips.
+- Versioned choices are documented provider IDs, not an account-specific availability list. Custom IDs remain supported.
+
 ## 0.9.2 — 2026-09-26
 
 - Add the public support email to plugin metadata and support documentation.

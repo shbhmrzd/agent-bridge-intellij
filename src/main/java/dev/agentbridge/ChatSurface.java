@@ -3,7 +3,6 @@ package dev.agentbridge;
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
-import java.util.regex.*;
 
 /** Native, width-aware chat layout. Kept independent of IDE services for layout verification. */
 final class ChatSurface extends JPanel {
@@ -109,7 +108,8 @@ final class ChatSurface extends JPanel {
         var selected = (ModelCatalog.Option) model.getSelectedItem();
         String name = selected == null || selected.id().isEmpty() ? "Default" : selected.label();
         selector.setText(provider.getSelectedItem() + " · " + shorten(name, 25) + " ▾");
-        selector.setToolTipText("Provider and model");
+        selector.setToolTipText(selected == null ? "Provider and model" : selected.label() + " · "
+            + (selected.id().isEmpty() ? "Uses CLI configuration" : selected.id()));
         selector.revalidate();
     }
     private static String shorten(String text, int length) { return text.length() <= length ? text : text.substring(0, length - 1) + "…"; }
@@ -184,9 +184,19 @@ final class ChatSurface extends JPanel {
         }
         menu.add(providers); menu.addSeparator();
         JMenuItem label = menuFont(new JMenuItem("Model")); label.setEnabled(false); menu.add(label);
+        boolean versionsLabel = false;
         for (int i = 0; i < model.getItemCount(); i++) {
             ModelCatalog.Option option = model.getItemAt(i);
+            if (!versionsLabel && provider.getSelectedItem() == AgentSession.Provider.Claude && option.id().startsWith("claude-")) {
+                menu.addSeparator();
+                JMenuItem versions = menuFont(new JMenuItem("Versions · account access applies"));
+                versions.setEnabled(false); menu.add(versions); versionsLabel = true;
+            }
             JRadioButtonMenuItem item = menuFont(new JRadioButtonMenuItem(shorten(option.label(), 60), option.equals(model.getSelectedItem())));
+            item.setToolTipText(option.equals(ModelCatalog.CUSTOM) ? "Enter an exact model ID from your provider"
+                : option.id().isEmpty() ? "Uses your CLI's configured model"
+                : option.label().contains("CLI alias") ? option.id() + ": version resolved by your CLI and provider configuration"
+                : option.id() + " · Requires CLI and account support");
             item.setEnabled(model.isEnabled()); item.addActionListener(e -> model.setSelectedItem(option)); menu.add(item);
         }
         if (reloadModels.isVisible()) { menu.addSeparator(); menu.add(command("Refresh models", reloadModels)); }
@@ -307,11 +317,11 @@ final class ChatSurface extends JPanel {
         public boolean getScrollableTracksViewportHeight() { return false; }
     }
     static final class Card extends JPanel {
-        private static final Pattern INLINE = Pattern.compile("\\*\\*(.+?)\\*\\*|`([^`]+)`");
         final JTextPane body = new JTextPane();
         final JPanel actions = new JPanel(new BorderLayout(4, 4));
         final StringBuilder source = new StringBuilder();
-        private boolean editStream;
+        private boolean editStream, renderPending;
+        private long lastRender;
         private final boolean user;
         final JPanel metadata = new JPanel(new BorderLayout(4, 4));
         Card(String author, String text) {
@@ -378,42 +388,28 @@ final class ChatSurface extends JPanel {
         void append(String text) {
             if (source.length() + text.length() > 256000) throw new IllegalStateException("Response exceeds the 256,000 character display limit");
             source.append(text);
-            int editAt = source.indexOf("```agent-bridge-edit");
-            if (editAt >= 0) {
-                if (!editStream) { body.setText(source.substring(0, editAt) + "\nPreparing suggested changes…"); editStream = true; }
-                revalidate(); return;
-            }
-            try { body.getDocument().insertString(body.getDocument().getLength(), text, null); }
-            catch (BadLocationException impossible) { throw new IllegalStateException(impossible); }
-            revalidate();
+            renderPending = true;
+            if (!editStream && source.indexOf("```agent-bridge-edit") >= 0) render();
+            else renderPending();
         }
-        void setText(String text) { source.setLength(0); editStream = false; body.setText(""); append(text); render(); }
+        boolean renderPending() {
+            // The panel's existing flush timer coalesces tokens; avoid rebuilding a large document for every token.
+            long interval = source.length() > 32000 ? 350_000_000L : 150_000_000L;
+            if (!renderPending || System.nanoTime() - lastRender < interval) return false;
+            render(); return true;
+        }
+        void setText(String text) { source.setLength(0); editStream = false; append(text); render(); }
         void render() {
-            // Styled text, not executable HTML. Rendering happens only after the stream finishes.
-            DefaultStyledDocument doc = new DefaultStyledDocument();
             SimpleAttributeSet normal = new SimpleAttributeSet(); StyleConstants.setFontSize(normal, body.getFont().getSize());
             StyleConstants.setBold(normal, false); StyleConstants.setFontFamily(normal, body.getFont().getFamily()); StyleConstants.setForeground(normal, foreground());
             SimpleAttributeSet code = new SimpleAttributeSet(normal); StyleConstants.setFontFamily(code, Font.MONOSPACED);
-            StyleConstants.setBackground(code, color("TextArea.background", getBackground()));
+            StyleConstants.setBackground(code, blend(color("Panel.background", new Color(0x25272b)), foreground(), .08f));
             SimpleAttributeSet bold = new SimpleAttributeSet(normal); StyleConstants.setBold(bold, true);
-            boolean fence = false;
-            try {
-                for (String line : source.toString().split("\n", -1)) {
-                    if (line.startsWith("```")) { fence = !fence; continue; }
-                    if (fence) { doc.insertString(doc.getLength(), line + "\n", code); continue; }
-                    if (line.matches("^#{1,6} .*")) { doc.insertString(doc.getLength(), line.replaceFirst("^#{1,6} ", "") + "\n", bold); continue; }
-                    Matcher inline = INLINE.matcher(line); int at = 0;
-                    while (inline.find()) {
-                        doc.insertString(doc.getLength(), line.substring(at, inline.start()), normal);
-                        doc.insertString(doc.getLength(), inline.group(1) != null ? inline.group(1) : inline.group(2), inline.group(1) != null ? bold : code);
-                        at = inline.end();
-                    }
-                    doc.insertString(doc.getLength(), line.substring(at) + "\n", normal);
-                }
-            } catch (BadLocationException impossible) { throw new IllegalStateException(impossible); }
-            SimpleAttributeSet paragraphs = new SimpleAttributeSet(); StyleConstants.setLineSpacing(paragraphs, .14f);
-            doc.setParagraphAttributes(0, doc.getLength(), paragraphs, false);
-            body.setDocument(doc); revalidate(); repaint();
+            String display = source.toString();
+            int editAt = display.indexOf("```agent-bridge-edit");
+            if (editAt >= 0) { display = display.substring(0, editAt) + "\nPreparing suggested changes…"; editStream = true; }
+            body.setDocument(MarkdownText.render(display, normal, code, bold));
+            renderPending = false; lastRender = System.nanoTime(); revalidate(); repaint();
         }
     }
     private static Color color(String key, Color fallback) { Color c = UIManager.getColor(key); return c == null ? fallback : c; }

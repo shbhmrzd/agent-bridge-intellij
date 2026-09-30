@@ -14,6 +14,11 @@ public final class ModelCatalogTest {
         var choices = ModelCatalog.choices(List.of(result.get(0), result.get(0)), "enterprise-model");
         check(choices.size() == 4 && choices.get(0).equals(ModelCatalog.DEFAULT) && choices.get(3).equals(ModelCatalog.CUSTOM), "choices deduplicate and preserve custom selections with explicit default/custom entries");
         check(ModelCatalog.defaults(AgentSession.Provider.Claude).stream().anyMatch(m -> m.id().equals("sonnet")), "Claude uses stable CLI family aliases");
+        var claude = ModelCatalog.defaults(AgentSession.Provider.Claude);
+        check(claude.stream().anyMatch(m -> m.id().equals("opus") && m.label().contains("CLI alias")), "family choice is explicitly an alias rather than a claimed version");
+        check(claude.stream().anyMatch(m -> m.id().equals("claude-opus-5-5") && m.label().equals("Opus 5.5")), "versioned Opus choice retains exact provider ID");
+        check(claude.stream().anyMatch(m -> m.id().equals("claude-sonnet-5-5") && m.label().equals("Sonnet 5.5")), "versioned Sonnet choice retains exact provider ID");
+        check(ModelCatalog.choices(claude, "claude-opus-5-5").stream().filter(m -> m.id().equals("claude-opus-5-5")).count() == 1, "persisted exact choice is not duplicated");
         check(ModelCatalog.defaults(AgentSession.Provider.Copilot).stream().anyMatch(m -> m.id().equals("auto")), "Copilot exposes CLI Auto without inventing account-specific models");
         check(ModelCatalog.validate("  claude-enterprise[1m]  ").equals("claude-enterprise[1m]"), "custom model IDs keep provider suffixes");
         for (String invalid : List.of("bad\nmodel", "--flag", "two words", "x".repeat(201))) {

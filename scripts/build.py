@@ -39,6 +39,8 @@ if args.test:
                     '-Xlint:deprecation,removal', '-Werror', '-cp', str(classes) + os.pathsep + classpath,
                     '-d', str(classes), *map(str, tests)], check=True)
 if args.test:
+    subprocess.run([str(java_home / 'bin/java'), '-ea', '-Djava.awt.headless=true', '-cp', str(classes) + os.pathsep + classpath,
+                    'dev.agentbridge.MarkdownTextTest'], check=True)
     subprocess.run([str(java_home / 'bin/java'), '-ea', '-cp', str(classes) + os.pathsep + classpath,
                     'dev.agentbridge.ConversationHistoryTest'], check=True)
     subprocess.run([str(java_home / 'bin/java'), '-ea', '-Djava.awt.headless=true', '-cp', str(classes) + os.pathsep + classpath,

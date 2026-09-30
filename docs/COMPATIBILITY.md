@@ -1,6 +1,6 @@
-# Compatibility validation — Agent Bridge 0.9.2
+# Compatibility validation - Agent Bridge 0.9.3
 
-Validated on 26 September 2026. The release ZIP is compiled against Community build **IC-243.23654.189** using Java 21 bytecode.
+Validated on 30 September 2026. The release ZIP is compiled against Community build **IC-243.23654.189** using Java 21 bytecode.
 
 ## Binary/API matrix
 
@@ -15,17 +15,18 @@ The **same ZIP** passed JetBrains Plugin Verifier 1.410 on all four targets, wit
 
 No deprecated, internal, experimental or incompatible API usage was reported. The gate also rejects missing reports, compatibility warnings, invalid descriptors, improper override-only usage and non-extendable API usage. Production and test compilation treats deprecation/removal warnings as errors.
 
-The source-controlled [verification summary](verification-0.9.2.json) records the release ZIP’s SHA-256, targets, plugin identity and results. Full local reports are under `build/verification-0.9.2/run-2flqv059/reports/`; build outputs are intentionally excluded from Git. CI uploads reports as workflow artifacts.
+The source-controlled [verification summary](verification-0.9.3.json) records the release ZIP’s SHA-256, targets, plugin identity and results. Full local reports are under `build/verification-0.9.3/run-hr1au8vb/reports/`; build outputs are intentionally excluded from Git. CI uploads reports as workflow artifacts.
 
 ## Automated checks
 
-The minimum Community SDK build passed **214 Java checks** and **5 Python gate checks**:
+The minimum Community SDK build passed **236 Java checks** and **5 Python gate checks**:
 
 | Area | Checks |
 | --- | --- |
 | Conversation history and handoff bounds | 21 |
 | Actual platform background read behavior | 5 |
-| Model discovery | 11 |
+| Model discovery | 15 |
+| Markdown rendering and version menu | 18 |
 | Selection/range lifecycle | 9 |
 | Provider protocols and context transport | 28 |
 | Context, edit validation and Swing layout | 86 |
@@ -46,4 +47,4 @@ Native UI, keyboard interaction, live provider requests/login flows and Windows/
 
 The public ID is `io.github.shbhmrzd.agentbridge`. It replaces the unpublished `dev.agentbridge.intellij` ID that required a naming exception. That exception has been removed from both the script and CI. [Preview users must migrate once](MIGRATION.md).
 
-The public contact `shbhmrzd@gmail.com` is configured in the 0.9.2 descriptor; use it in the Marketplace vendor profile. Native smoke checks, final live gallery captures and Marketplace review remain before Marketplace publication. Binary compatibility is not Marketplace approval.
+The public contact `shbhmrzd@gmail.com` is configured in the 0.9.3 descriptor; use it in the Marketplace vendor profile. Native smoke checks, final live gallery captures and Marketplace review remain before Marketplace publication. Binary compatibility is not Marketplace approval.

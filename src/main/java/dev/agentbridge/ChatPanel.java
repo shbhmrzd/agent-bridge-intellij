@@ -667,6 +667,10 @@ final class ChatPanel implements Disposable {
             catch (IllegalStateException tooLarge) { reset(); setStatus(tooLarge.getMessage()); return; }
             if (follow) view.followBottom();
         }
+        if (activeCard != null) {
+            boolean follow = view.followsBottom();
+            if (activeCard.renderPending() && follow) view.followBottom();
+        }
         String s = pendingStatus.getAndSet(null); if (s != null) setStatus(s);
     }
     private void updateButtons() {

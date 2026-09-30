@@ -18,11 +18,11 @@ The plugin ZIP contains no maintainer credentials. Each installation uses that m
 
 ## 2. Install the plugin
 
-**Before the Marketplace listing is approved:** use an installable ZIP from [Releases](https://github.com/shbhmrzd/agent-bridge-intellij/releases) when available, a successful [Actions run](https://github.com/shbhmrzd/agent-bridge-intellij/actions/workflows/compatibility.yml), or a local build. Extract the Actions artifact wrapper to get the plugin ZIP; GitHub’s source-code ZIP is not an installable plugin. Then open Settings → Plugins → gear → Install Plugin from Disk. Select the ZIP itself and restart when prompted. The development artifact for this pack is `build/agent-bridge-0.9.2.zip`.
+**Before the Marketplace listing is approved:** use an installable ZIP from [Releases](https://github.com/shbhmrzd/agent-bridge-intellij/releases) when available, a successful [Actions run](https://github.com/shbhmrzd/agent-bridge-intellij/actions/workflows/compatibility.yml), or a local build. Extract the Actions artifact wrapper to get the plugin ZIP; GitHub’s source-code ZIP is not an installable plugin. Then open Settings → Plugins → gear → Install Plugin from Disk. Select the ZIP itself and restart when prompted. The development artifact for this pack is `build/agent-bridge-0.9.3.zip`.
 
 **After approval:** open Settings → Plugins → Marketplace, search for the final plugin name, verify the publisher, and install. This route is conditional: the draft pack does not imply that the listing is already live.
 
-**Upgrading from 0.8.x:** uninstall the old preview first, then install 0.9.2. The plugin ID changed; see [migration instructions](../docs/MIGRATION.md).
+**Upgrading from 0.8.x:** uninstall the old preview first, then install 0.9.3. The plugin ID changed; see [migration instructions](../docs/MIGRATION.md).
 
 ## 3. Select the CLI connection
 
@@ -73,7 +73,8 @@ Click the compact provider/model control. Choose a model from the menu or select
 Switching after sending a message offers **Continue with context**, **Start fresh**, and **Cancel**. Continue keeps the visible chat and sends recent completed exchanges to the selected provider with your next question. Start fresh clears the chat; both choices keep your draft and attachments. Cancel leaves the current session unchanged. Handoff is limited to 12 exchanges / 48,000 text characters, with messages capped at 12,000 characters; failed/partial responses and earlier file snapshots are excluded. Fresh file context is captured on send.
 
 - Default: use the CLI configuration with no model override.
-- Claude: Sonnet, Opus and Haiku are family aliases resolved by the CLI.
+- Claude: choose a named version such as **Opus 5.5** or **Sonnet 5.5**, or a family option labeled **CLI alias**. Version choices are documented Anthropic IDs, not an account-specific availability list. Aliases are resolved by your CLI and provider configuration. Hover to inspect the exact ID; use Custom model for enterprise deployments or other versions.
+  - Newer versions require a compatible CLI. Anthropic documents Claude Code 2.1.280+ for Opus 5.5 and 2.1.284+ for Sonnet 5.5. Update the CLI if it rejects a version. See [model configuration](https://code.claude.com/docs/en/model-config).
 - Codex: model choices come from the installed CLI’s catalog. Use **Refresh models** in the selector menu if needed.
 - Copilot: choose Default, Auto, or a custom ID obtained from your CLI’s model selector.
 

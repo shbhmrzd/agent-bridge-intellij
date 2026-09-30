@@ -13,7 +13,14 @@ final class ModelCatalog {
     static final Option CUSTOM = new Option("\u0000", "Custom model…");
     static List<Option> defaults(AgentSession.Provider provider) {
         return switch (provider) {
-            case Claude -> List.of(DEFAULT, new Option("sonnet", "Sonnet"), new Option("opus", "Opus"), new Option("haiku", "Haiku"));
+            // Documented Anthropic IDs, checked 2026-09-30. These are choices, not an account entitlement list.
+            // https://code.claude.com/docs/en/model-config
+            // https://platform.claude.com/docs/en/models/overview
+            case Claude -> List.of(DEFAULT,
+                new Option("sonnet", "Sonnet (CLI alias)"), new Option("opus", "Opus (CLI alias)"), new Option("haiku", "Haiku (CLI alias)"),
+                new Option("claude-opus-5-5", "Opus 5.5"), new Option("claude-opus-5", "Opus 5"), new Option("claude-opus-4-6", "Opus 4.6"),
+                new Option("claude-sonnet-5-5", "Sonnet 5.5"), new Option("claude-sonnet-5", "Sonnet 5"), new Option("claude-sonnet-4-6", "Sonnet 4.6"),
+                new Option("claude-haiku-4-5-20251001", "Haiku 4.5"));
             case Copilot -> List.of(DEFAULT, new Option("auto", "Auto (Copilot chooses)"));
             case Codex -> List.of(DEFAULT);
         };
