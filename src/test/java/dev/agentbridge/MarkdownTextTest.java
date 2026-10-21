@@ -33,6 +33,14 @@ public final class MarkdownTextTest {
         check(text(inline).equals("Use a`b and bold.\n"), "inline code allows embedded backticks");
         check(StyleConstants.isBold(inline.getCharacterElement(text(inline).indexOf("bold")).getAttributes()), "bold prose still renders");
         check(text(render("<script>literal</script>\n~~~html\n<img src='https://example.invalid'>\n~~~")).contains("<img src="), "HTML remains inert literal text");
+        var table = render("| Module | Purpose |\n|---|---|\n| `xxx-api` | Public interfaces and DTOs |\n| `xxx-impl` | Spring beans and wiring |\nAfter");
+        check(text(table).equals("xxx-api\nPurpose: Public interfaces and DTOs\n\nxxx-impl\nPurpose: Spring beans and wiring\n\nAfter\n"), "Markdown table becomes readable stacked rows in a narrow sidebar");
+        check(StyleConstants.isBold(table.getCharacterElement(0).getAttributes()), "table row label is distinct from its description");
+        check(StyleConstants.getFontFamily(table.getCharacterElement(0).getAttributes()).equals(Font.MONOSPACED), "inline code in a table keeps its code style");
+        var list = render("- The POM has `<packaging>pom</packaging>`.\n  - Child module inherits dependencies.\n1. Review the diff.");
+        check(text(list).equals("• The POM has <packaging>pom</packaging>.\n• Child module inherits dependencies.\n1. Review the diff.\n"), "bullet and numbered list markers render cleanly");
+        check(StyleConstants.getLeftIndent(list.getParagraphElement(0).getAttributes()) > 0f, "list wraps with a hanging indent");
+        check(StyleConstants.getLeftIndent(list.getParagraphElement(text(list).indexOf("Child")).getAttributes()) > StyleConstants.getLeftIndent(list.getParagraphElement(0).getAttributes()), "nested list is indented further");
         SwingUtilities.invokeAndWait(() -> {
             var card = new ChatSurface.Card("Claude", "~~");
             card.append("~java\nint answer = 42;\n~~"); card.render();
