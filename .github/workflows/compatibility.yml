@@ -138,8 +138,8 @@ jobs:
           MARKETPLACE_TOKEN: ${{ secrets.JETBRAINS_MARKETPLACE_TOKEN }}
         run: |
           if [[ -z "$MARKETPLACE_TOKEN" ]]; then
-            echo 'Missing JETBRAINS_MARKETPLACE_TOKEN repository secret' >&2
-            exit 1
+            echo '::warning::JETBRAINS_MARKETPLACE_TOKEN is not configured; Marketplace upload skipped.'
+            exit 0
           fi
           shopt -s nullglob
           archives=(dist/agent-bridge-*.zip)

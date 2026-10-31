@@ -81,7 +81,7 @@ Edits currently target existing, attached text files. Creating, deleting or rena
 
 ## Requirements and current scope
 
-The descriptor supports IntelliJ IDEA **2024.3.2.2 through 2026.2.x**, builds **243.23654.189 through 262.***. The release compiles against the minimum Community SDK and declares no Ultimate-only dependency. See [compatibility evidence](../docs/COMPATIBILITY.md) for tested builds and limits. Other IDE products and a broad native operating-system matrix have not been verified.
+The descriptor supports IntelliJ IDEA **2024.3.2.2 through 2026.3.x**, builds **243.23654.189 through 263.***. The release compiles against the minimum Community SDK and declares no Ultimate-only dependency. See [compatibility evidence](../docs/COMPATIBILITY.md) for tested builds and limits. Other IDE products and a broad native operating-system matrix have not been verified.
 
 Install at least one supported CLI and obtain access to that provider. Enable IntelliJ’s bundled Terminal plugin for button-based Claude/Copilot login. Codex login does not require that Terminal integration.
 

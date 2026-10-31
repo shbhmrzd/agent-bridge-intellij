@@ -38,7 +38,7 @@ Record only working behavior from the released version. Do not splice a differen
 >
 > Select code to open a nearby chat, add project files, and review suggested edits in IntelliJ’s diff before applying them. The interface keeps the question and response in front, with account settings behind a gear.
 >
-> The plugin does not require a JetBrains AI subscription. You still need provider access, and provider usage limits apply. This release targets IntelliJ IDEA 2024.3.2.2 through 2026.2.x; it does not offer inline autocomplete or autonomous background editing.
+> The plugin does not require a JetBrains AI subscription. You still need provider access, and provider usage limits apply. This release targets IntelliJ IDEA 2024.3.2.2 through 2026.3.x; it does not offer inline autocomplete or autonomous background editing.
 >
 > Install: [MARKETPLACE_URL]
 > Setup and known limits: https://github.com/shbhmrzd/agent-bridge-intellij/blob/main/marketplace/GETTING-STARTED.md

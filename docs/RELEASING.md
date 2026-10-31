@@ -16,4 +16,4 @@ The [IDE compatibility workflow](../.github/workflows/compatibility.yml) builds 
 
 To publish the current committed version after adding the secret, open **Actions → IDE compatibility → Run workflow**, choose `main`, and check **Upload this version**. Only use this if that version has not already been uploaded; JetBrains does not accept duplicate version uploads. This manual run goes through the same build and verification jobs.
 
-If the upload fails because the token is missing or invalid, fix the GitHub secret and use the manual run above. Do not bump the version merely to retry a failed upload.
+If the token is missing, CI emits a warning and skips the upload; upload manually or add the secret and use the manual run above. If the token is invalid, the upload fails. Do not bump the version merely to retry a failed upload.

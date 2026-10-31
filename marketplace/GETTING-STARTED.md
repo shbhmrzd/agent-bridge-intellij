@@ -2,7 +2,7 @@
 
 ## 1. Check your environment
 
-Use IntelliJ IDEA 2024.3.2.2–2026.2.x for the current build. Other releases are not covered by the descriptor. No Ultimate-only dependency is declared, but separate free-mode validation remains on the release checklist.
+Use IntelliJ IDEA 2024.3.2.2–2026.3.x for the current build. Other releases are not covered by the descriptor. No Ultimate-only dependency is declared, but separate free-mode validation remains on the release checklist.
 
 Install one of the supported CLIs using the provider’s own instructions. You do not need to install all three:
 
@@ -119,7 +119,7 @@ If a file changed after you sent the request, the plugin refuses to apply the st
 | Symptom | What to try |
 | --- | --- |
 | Failed to load plugin descriptor | Select the actual plugin ZIP, not the GitHub source archive or outer Actions artifact wrapper. |
-| IDE says incompatible | Check Help → About. Supported builds are 243.23654.189 through 262.*. |
+| IDE says incompatible | Check Help → About. Supported builds are 243.23654.189 through 263.*. |
 | CLI executable not found | Check ⚙ → Settings and use the resolved executable path. Restart IntelliJ after changing shell installation paths if needed. |
 | Login succeeds, request fails | Check provider entitlement, quota, network/proxy access and CLI version. Saved login is not proof of usable inference access. |
 | Claude/Copilot Sign in cannot open | Enable IntelliJ’s bundled Terminal plugin, or authenticate directly with the CLI. |

@@ -39,7 +39,7 @@ Provider tests use synthetic fixtures, with no paid model requests. The archive 
 
 ## Range and limits
 
-Installation is declared from **243.23654.189 through 262.***. The minimum is 2024.3.2.2, not every 2024.3 patch. The EAP result is an early probe and does not enable installation into build 263. Intermediate branches/patches and future IDE versions are not all individually verified.
+The 0.9.4 archive was declared compatible from **243.23654.189 through 262.***. Version 0.9.6 extends the descriptor to **263.***. The 263 EAP result above is an early binary compatibility probe of the earlier archive; it does not replace verification and native smoke testing against a current 263 build. The minimum remains 2024.3.2.2, not every 2024.3 patch. Intermediate branches/patches and future IDE versions are not all individually verified.
 
 Native UI, keyboard interaction, live provider requests/login flows and Windows/Linux execution still require smoke checks. Static verification and headless component previews do not establish those behaviors. See [release checks](RELEASE-CHECKS.md).
 
@@ -47,4 +47,4 @@ Native UI, keyboard interaction, live provider requests/login flows and Windows/
 
 The public ID is `io.github.shbhmrzd.agentbridge`. It replaces the unpublished `dev.agentbridge.intellij` ID that required a naming exception. That exception has been removed from both the script and CI. [Preview users must migrate once](MIGRATION.md).
 
-The public contact `shbhmrzd@gmail.com` is configured in the 0.9.4 descriptor; use it in the Marketplace vendor profile. Native smoke checks, final live gallery captures and Marketplace review remain before Marketplace publication. Binary compatibility is not Marketplace approval.
+The public contact `shbhmrzd@gmail.com` is configured in the descriptor. Agent Bridge is listed on [JetBrains Marketplace](https://plugins.jetbrains.com/plugin/34567-agent-bridge); each uploaded update requires review. Binary compatibility alone is not Marketplace approval.
