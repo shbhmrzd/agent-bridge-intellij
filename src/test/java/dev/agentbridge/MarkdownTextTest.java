@@ -41,8 +41,25 @@ public final class MarkdownTextTest {
         check(text(list).equals("• The POM has <packaging>pom</packaging>.\n• Child module inherits dependencies.\n1. Review the diff.\n"), "bullet and numbered list markers render cleanly");
         check(StyleConstants.getLeftIndent(list.getParagraphElement(0).getAttributes()) > 0f, "list wraps with a hanging indent");
         check(StyleConstants.getLeftIndent(list.getParagraphElement(text(list).indexOf("Child")).getAttributes()) > StyleConstants.getLeftIndent(list.getParagraphElement(0).getAttributes()), "nested list is indented further");
+        var afterList = render("- First item\n- Second item\n\nThe bug\n\n```python\nreturn value\n```\n\n<details>\nDone");
+        for (String line : new String[]{"The bug", "return value", "<details>", "Done"}) {
+            var paragraph = afterList.getParagraphElement(text(afterList).indexOf(line));
+            check(StyleConstants.getFirstLineIndent(paragraph.getAttributes()) == 0f,
+                "first line of " + line + " is not shifted under the transcript edge");
+        }
+        var tableAfterList = render("- First item\n\n| Module | Purpose |\n|---|---|\n| core | Main code |");
+        check(StyleConstants.getFirstLineIndent(tableAfterList.getParagraphElement(text(tableAfterList).indexOf("core")).getAttributes()) == 0f,
+            "table after a list starts inside the transcript edge");
         SwingUtilities.invokeAndWait(() -> {
             var card = new ChatSurface.Card("Claude", "~~");
+            var visible = new ChatSurface.Card("Claude", "- First item\n- Second item\n\nThe bug\n\n```python\nreturn value\n```\n\n<details>\nDone");
+            visible.body.setSize(400, 600);
+            for (String line : new String[]{"The bug", "return value", "<details>", "Done"}) {
+                try {
+                    check(visible.body.modelToView2D(visible.body.getText().indexOf(line)).getBounds().getX() >= 0,
+                        "rendered " + line + " starts within the message view");
+                } catch (BadLocationException error) { throw new IllegalStateException(error); }
+            }
             card.append("~java\nint answer = 42;\n~~"); card.render();
             check(card.body.getText().equals("int answer = 42;\n~~\n"), "partial closing fence is kept as code until complete");
             card.append("~\nDone"); card.render();

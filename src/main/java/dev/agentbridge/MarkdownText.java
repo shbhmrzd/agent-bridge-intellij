@@ -31,6 +31,7 @@ final class MarkdownText {
                     doc.insertString(start, line.substring(remove) + "\n", code);
                     SimpleAttributeSet block = new SimpleAttributeSet();
                     StyleConstants.setLeftIndent(block, 10f);
+                    StyleConstants.setFirstLineIndent(block, 0f);
                     StyleConstants.setRightIndent(block, 10f);
                     doc.setParagraphAttributes(start, doc.getLength() - start, block, false);
                     continue;
@@ -39,6 +40,11 @@ final class MarkdownText {
                     marker = fence.group(2).charAt(0); length = fence.group(2).length(); indent = fence.group(1).length();
                     continue;
                 }
+                int paragraphStart = doc.getLength();
+                SimpleAttributeSet prose = new SimpleAttributeSet();
+                StyleConstants.setLeftIndent(prose, 0f); StyleConstants.setFirstLineIndent(prose, 0f);
+                StyleConstants.setRightIndent(prose, 0f);
+                doc.setParagraphAttributes(paragraphStart, 0, prose, false);
                 if (index + 1 < lines.length && tableCells(line).length >= 2 && TABLE_DIVIDER.matcher(lines[index + 1]).matches()) {
                     String[] headings = tableCells(line);
                     index++;
@@ -58,10 +64,6 @@ final class MarkdownText {
                     }
                     continue;
                 }
-                int paragraphStart = doc.getLength();
-                SimpleAttributeSet prose = new SimpleAttributeSet();
-                StyleConstants.setLeftIndent(prose, 0f); StyleConstants.setRightIndent(prose, 0f);
-                doc.setParagraphAttributes(paragraphStart, 0, prose, false);
                 if (line.matches("^ {0,3}#{1,6} .*")) {
                     doc.insertString(doc.getLength(), line.replaceFirst("^ {0,3}#{1,6} ", "") + "\n", bold);
                     continue;

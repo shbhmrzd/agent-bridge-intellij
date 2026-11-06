@@ -19,12 +19,12 @@ Agent Bridge is a free, MIT-licensed plugin. It requires no JetBrains AI subscri
 - Review supported changes in IntelliJ’s diff viewer, apply them to editor buffers, and Undo.
 - Press **Enter** to send and **Shift+Enter** for a new line. Cmd/Ctrl+Enter also sends.
 
-## Install the 0.9.6 preview
+## Install the 0.9.7 preview
 
 Requires **IntelliJ IDEA 2024.3.2.2 through 2026.3.x** (builds `243.23654.189` through `263.*`) and at least one installed provider CLI. No Ultimate-only dependency is declared.
 
-1. Install [Agent Bridge from JetBrains Marketplace](https://plugins.jetbrains.com/plugin/34567-agent-bridge) in the IDE, or use the installable ZIP from a successful [compatibility workflow](https://github.com/shbhmrzd/agent-bridge-intellij/actions/workflows/compatibility.yml). Extract the Actions artifact wrapper to find the plugin ZIP; do not install GitHub’s source-code archive.
-2. If using a ZIP, open **Settings → Plugins → gear → Install Plugin from Disk**, select `agent-bridge-0.9.6.zip`, and restart if prompted.
+1. Install [Agent Bridge from JetBrains Marketplace](https://plugins.jetbrains.com/plugin/34567-agent-bridge) in the IDE, or use the installable ZIP from a successful [compatibility workflow](https://github.com/shbhmrzd/agent-bridge-intellij/actions/workflows/compatibility.yml) to test 0.9.7 before Marketplace approval. Extract the Actions artifact wrapper to find the plugin ZIP; do not install GitHub’s source-code archive.
+2. If using a ZIP, open **Settings → Plugins → gear → Install Plugin from Disk**, select `agent-bridge-0.9.7.zip`, and restart if prompted.
 3. Open **View → Tool Windows → Agent Bridge**, select your provider, and use **gear → Sign in** if needed.
 4. Open a source file and ask: “Explain this file and identify one edge case.”
 
@@ -104,7 +104,7 @@ python3 scripts/build.py --ide "$IDEA_HOME" --test
 python3 -m unittest discover -s scripts/tests -v
 ```
 
-Expected results: **254 Java checks**, **5 Python checks**, and `build/agent-bridge-0.9.6.zip`. Checks print their results to the terminal and return a nonzero exit status on failure. The suite uses fake provider processes and performs no paid model requests. Some tests exercise real platform documents/background reads and headless Swing layouts; they do not launch an IDE window. Layout previews are written under `build/`.
+Expected results: **263 Java checks**, **5 Python checks**, and `build/agent-bridge-0.9.7.zip`. Checks print their results to the terminal and return a nonzero exit status on failure. The suite uses fake provider processes and performs no paid model requests. Some tests exercise real platform documents/background reads and headless Swing layouts; they do not launch an IDE window. Layout previews are written under `build/`.
 
 For packaging alone, omit `--test`. To keep a build separate, add `--output build/local`. No Gradle/Maven setup or Python package installation is required. SDK libraries are used for compilation and are not bundled in the plugin.
 
@@ -129,7 +129,7 @@ The main areas are `src/main/java/dev/agentbridge/` (UI, context and providers),
 
 | Problem | Next step |
 | --- | --- |
-| Failed to load plugin descriptor | Install `agent-bridge-0.9.6.zip`, not a source-code ZIP or the outer GitHub Actions download wrapper. |
+| Failed to load plugin descriptor | Install `agent-bridge-0.9.7.zip`, not a source-code ZIP or the outer GitHub Actions download wrapper. |
 | IDE says incompatible | Check the exact build under Help → About; the minimum is `243.23654.189` and the maximum declared branch is `263.*`. |
 | CLI not found or login differs from terminal | Set the resolved executable’s absolute path in gear → Settings; the IDE can inherit a different PATH. |
 | Model requires a newer CLI | Update that exact CLI using its supported installer/update command, save Settings to restart the session, then refresh models. Updating a separate desktop app may not update the executable configured in the plugin. |
