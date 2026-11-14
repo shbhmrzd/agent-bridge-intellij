@@ -55,6 +55,18 @@ public final class ContextTest {
                     for (String key : new String[]{"Label.font", "Button.font", "ComboBox.font", "CheckBox.font", "TextArea.font", "TextPane.font"})
                         UIManager.put(key, new Font("SansSerif", Font.PLAIN, 13));
                     ChatSurface hoverSurface = new ChatSurface();
+                    for (boolean inline : new boolean[]{false, true}) {
+                        ChatSurface promptSurface = new ChatSurface();
+                        if (inline) promptSurface.inlineMode();
+                        for (double scale : new double[]{1, 1.5, 2}) {
+                            BufferedImage aliased = promptImage(promptSurface.composer, background, scale, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+                            BufferedImage smooth = promptImage(promptSurface.composer, background, scale, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                            check(!Arrays.equals(aliased.getRGB(0, 0, aliased.getWidth(), aliased.getHeight(), null, 0, aliased.getWidth()),
+                                smooth.getRGB(0, 0, smooth.getWidth(), smooth.getHeight(), null, 0, smooth.getWidth())),
+                                "placeholder respects component text smoothing: dark=" + dark + " inline=" + inline + " scale=" + scale);
+                            ImageIO.write(smooth, "png", Path.of(args[0], "prompt-smooth-" + dark + "-" + inline + "-" + scale + ".png").toFile());
+                        }
+                    }
                     hoverSurface.gear.setSize(hoverSurface.gear.getPreferredSize());
                     check(hoverSurface.gear.getIcon().getIconWidth() >= 20 && hoverSurface.gear.getWidth() >= 34,
                         "gear has a visible vector icon and target " + dark);
@@ -177,6 +189,18 @@ public final class ContextTest {
         BufferedImage image = new BufferedImage(component.getWidth(), component.getHeight(), BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics(); component.paint(graphics); graphics.dispose();
         return image.getRGB(x, y);
+    }
+    private static BufferedImage promptImage(JTextArea prompt, Color background, double scale, Object smoothing) {
+        prompt.setSize(440, 76);
+        prompt.putClientProperty(RenderingHints.KEY_TEXT_ANTIALIASING, smoothing);
+        BufferedImage image = new BufferedImage((int)(440 * scale), (int)(76 * scale), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = image.createGraphics();
+        g.setColor(background); g.fillRect(0, 0, image.getWidth(), image.getHeight());
+        g.scale(scale, scale);
+        // The component must honor the IDE preference even when the incoming graphics differs.
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+        prompt.paint(g); g.dispose();
+        return image;
     }
     static void populateModels(ChatSurface surface) {
         surface.reloadModels.setVisible(false);

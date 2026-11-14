@@ -275,8 +275,14 @@ final class ChatSurface extends JPanel {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             if (getText().isEmpty()) {
-                g.setColor(muted()); g.setFont(getFont());
-                g.drawString("Ask a question or describe a change…", getInsets().left, getInsets().top + g.getFontMetrics().getAscent());
+                Graphics2D text = (Graphics2D) g.create();
+                try {
+                    text.setColor(muted()); text.setFont(getFont());
+                    // Honor the look-and-feel's text smoothing, just like native Swing labels.
+                    javax.swing.plaf.basic.BasicGraphicsUtils.drawString(this, text,
+                        "Ask a question or describe a change…", getInsets().left,
+                        getInsets().top + text.getFontMetrics().getAscent());
+                } finally { text.dispose(); }
             }
         }
     }

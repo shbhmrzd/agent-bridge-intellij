@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>io.github.shbhmrzd.agentbridge</id>
   <name>Agent Bridge</name>
-  <version>0.9.7</version>
+  <version>0.9.8</version>
   <vendor email="shbhmrzd@gmail.com" url="https://github.com/shbhmrzd/agent-bridge-intellij">shbhmrzd</vendor>
   <description><![CDATA[
 <h2>AI coding chat using your existing accounts</h2>
@@ -36,6 +36,7 @@
 <p>Agent Bridge is an independent integration, not an official OpenAI, Anthropic, GitHub or JetBrains product.</p>
   ]]></description>
   <change-notes><![CDATA[
+    <p>0.9.8: use native Swing text smoothing for the question placeholder in side and selected-code chats, including HiDPI displays.</p>
     <p>0.9.7: prevent response text after Markdown lists from being clipped at the left edge in side and selected-code chats.</p>
     <p>0.9.6: extend declared IntelliJ IDEA compatibility through the 2026.3 release branch (263.*). No chat behavior changes.</p>
     <p>0.9.5: render Markdown lists with hanging indents and display tables as readable stacked rows in narrow chats.</p>

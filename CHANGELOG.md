@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.8 - 2026-11-14
+
+- Honor native Swing text smoothing for the question placeholder in both chat views.
+- Verify placeholder rendering with light/dark themes at 100%, 150% and 200% scale.
+
 ## 0.9.4 - 2026-09-30
 
 - Keep exact Codex version and variant IDs visible when CLI catalog labels are generic or ambiguous.
