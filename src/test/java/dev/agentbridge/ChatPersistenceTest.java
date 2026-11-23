@@ -38,6 +38,7 @@ public final class ChatPersistenceTest {
     public static void main(String[] args) throws Exception {
         int exit = 0; var lifetime = Disposer.newDisposable();
         Path root = Files.createTempDirectory("agent-bridge-panel-test-");
+        System.setProperty("idea.config.path", root.resolve("ide-config").toString());
         var store = new ConversationStore(root.resolve("saved"));
         var archive = new ConversationArchive(store);
         ChatPanel[] panels = new ChatPanel[2];
@@ -100,6 +101,23 @@ public final class ChatPersistenceTest {
                     "recreated panel restores only the two successful exchanges into provider context"); }
                 catch (IllegalAccessException error) { throw new RuntimeException(error); }
             });
+            edt(() -> { Disposer.dispose(panels[1]); panels[1] = null; });
+            Path config = Path.of(com.intellij.openapi.application.PathManager.getConfigPath());
+            check(config.startsWith(root), "project-service persistence uses an isolated test IDE profile");
+            var service = new ProjectConversations(project);
+            var serviceStore = new ConversationStore(ConversationStore.projectDirectory(config, root.toString()));
+            edt(() -> {
+                panels[1] = new ChatPanel(project, null, service.archive, () -> null); panels[1].track(service);
+                var closingView = (ChatSurface)panels[1].component(); closingView.projectContext.setSelected(false);
+                closingView.composer.setText("fixture-slow"); closingView.send.doClick();
+            });
+            var closingView = (ChatSurface)panels[1].component();
+            until(() -> closingView.transcript.getComponentCount() == 2 && ((ChatSurface.Card)closingView.transcript.getComponent(1)).source.length() > 0);
+            edt(service::dispose); panels[1] = null;
+            var closedChat = serviceStore.read(serviceStore.list().getFirst().id());
+            check(closedChat.turns().getFirst().status() == ConversationStore.Status.INTERRUPTED
+                && closedChat.turns().getFirst().assistant().contains("Claude fixture reply"),
+                "service-first project disposal closes panels and drains their final response save");
             System.out.println("Passed " + passed + " chat persistence integration checks (real controller, mock IDE services, no paid model calls).");
         } catch (Throwable error) { error.printStackTrace(); exit = 1; }
         finally {

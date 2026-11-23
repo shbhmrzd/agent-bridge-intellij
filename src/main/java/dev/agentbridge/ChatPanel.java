@@ -59,6 +59,7 @@ final class ChatPanel implements Disposable {
     private String model;
     private final ConversationHistory history = new ConversationHistory();
     private final ConversationArchive archive;
+    private ProjectConversations conversations;
     private final Object savedOwner = new Object();
     private String conversationId = UUID.randomUUID().toString();
     private String activeTurnId;
@@ -83,7 +84,9 @@ final class ChatPanel implements Disposable {
     ChatPanel(Project project, SelectionContext selection) {
         this(project, selection, project.getService(ProjectConversations.class).archive,
             () -> FileEditorManager.getInstance(project).getSelectedTextEditor());
+        track(project.getService(ProjectConversations.class));
     }
+    void track(ProjectConversations service) { conversations = service; service.track(this); }
     ChatPanel(Project project, SelectionContext selection, ConversationArchive archive,
               java.util.function.Supplier<com.intellij.openapi.editor.Editor> selectedEditor) {
         this.project = project;
@@ -847,10 +850,12 @@ final class ChatPanel implements Disposable {
     }
     @Override public void dispose() {
         if (disposed) return;
+        flush();
         disposed = true; modelsGeneration++;
         if (modelsTask != null) modelsTask.cancel(true);
         reset(); history.clear(); pinned.clear(); folders.clear();
         archive.release(savedOwner);
+        if (conversations != null) conversations.untrack(this);
         if (selection != null) selection.dispose();
         for (LoginLauncher.Handle login : List.copyOf(logins.values())) {
             try { login.cancel(); } catch (RuntimeException ignored) { }

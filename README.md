@@ -115,7 +115,7 @@ python3 scripts/build.py --ide "$IDEA_HOME" --test
 python3 -m unittest discover -s scripts/tests -v
 ```
 
-Expected results: **345 Java checks**, **5 Python checks**, and `build/agent-bridge-0.10.0.zip`. Checks print their results to the terminal and return a nonzero exit status on failure. The suite uses fake provider processes and performs no paid model requests. Some tests exercise real platform documents/background reads and headless Swing layouts; they do not launch an IDE window. Layout previews are written under `build/`.
+Expected results: **347 Java checks**, **5 Python checks**, and `build/agent-bridge-0.10.0.zip`. Checks print their results to the terminal and return a nonzero exit status on failure. The suite uses fake provider processes and performs no paid model requests. Some tests exercise real platform documents/background reads and headless Swing layouts; they do not launch an IDE window. Layout previews are written under `build/`.
 
 For packaging alone, omit `--test`. To keep a build separate, add `--output build/local`. No Gradle/Maven setup or Python package installation is required. SDK libraries are used for compilation and are not bundled in the plugin.
 
