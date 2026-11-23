@@ -4,7 +4,7 @@ The first shareable preview uses `io.github.shbhmrzd.agentbridge` as its permane
 
 Because IntelliJ identifies plugins by ID, it will not treat these as the same installed plugin:
 
-1. Finish or copy any conversations you need. IDE chat history is held only in memory.
+1. Finish or copy any conversations you need. Versions before 0.10.0 held chat history only in memory; those existing chats cannot be recovered after restart.
 2. In Settings → Plugins → Installed, uninstall the old Agent Bridge preview.
 3. Restart if IntelliJ requests it, then install `agent-bridge-0.9.0.zip` through Install Plugin from Disk.
 4. Restart if requested. Open Agent Bridge, check the provider/executable/model settings, and run Check login where supported.

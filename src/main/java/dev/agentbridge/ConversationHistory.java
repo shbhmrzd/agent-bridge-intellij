@@ -40,6 +40,14 @@ final class ConversationHistory {
         return text.substring(0, end) + suffix;
     }
     Snapshot forSession(boolean newSession) { return newSession ? new Snapshot(turns, truncated) : Snapshot.empty(); }
+    void restore(ConversationStore.Chat chat) {
+        clear(); truncated = chat.truncated();
+        for (var turn : chat.turns()) {
+            sent();
+            if (turn.status() == ConversationStore.Status.COMPLETED)
+                completed(turn.provider(), turn.model(), turn.user(), turn.assistant());
+        }
+    }
     void apply(Choice choice) { if (choice == Choice.FRESH) clear(); }
     void clear() { turns.clear(); visibleConversation = false; truncated = false; }
 }

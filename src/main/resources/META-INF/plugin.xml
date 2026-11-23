@@ -1,7 +1,7 @@
 <idea-plugin>
   <id>io.github.shbhmrzd.agentbridge</id>
   <name>Agent Bridge</name>
-  <version>0.9.8</version>
+  <version>0.10.0</version>
   <vendor email="shbhmrzd@gmail.com" url="https://github.com/shbhmrzd/agent-bridge-intellij">shbhmrzd</vendor>
   <description><![CDATA[
 <h2>AI coding chat using your existing accounts</h2>
@@ -14,6 +14,7 @@
 <li><b>Project context:</b> attach files and folders through IntelliJ’s project picker, or enable a bounded search for related project files.</li>
 <li><b>Compact model selection:</b> choose your provider and model in one menu. Codex loads its CLI catalog with explicit version and variant labels. Claude and Copilot offer documented versioned choices; CLI defaults, aliases and custom model IDs remain available. Account and CLI support determine which choices work.</li>
 <li><b>Reviewable changes:</b> inspect supported suggestions in IntelliJ’s diff view, apply the reviewed proposal, and use Undo. Multi-file proposals apply together.</li>
+<li><b>Saved conversations:</b> automatically save chats locally per project. Resume, rename or delete them from Saved chats, including after an IDE restart.</li>
 <li><b>Conversation continuity:</b> continue with recent context or start fresh when switching provider or model.</li>
 <li><b>Keyboard first:</b> Enter sends; Shift+Enter inserts a new line.</li>
 <li><b>Account controls:</b> sign in, check login or change configuration from the settings gear.</li>
@@ -36,6 +37,7 @@
 <p>Agent Bridge is an independent integration, not an official OpenAI, Anthropic, GitHub or JetBrains product.</p>
   ]]></description>
   <change-notes><![CDATA[
+    <p>0.10.0: automatically save conversations locally per project. Resume, rename and delete them from Saved chats, including after closing a popup or restarting the IDE. Resume uses fresh file context; interrupted responses and previous edit proposals are never replayed.</p>
     <p>0.9.8: use native Swing text smoothing for the question placeholder in side and selected-code chats, including HiDPI displays.</p>
     <p>0.9.7: prevent response text after Markdown lists from being clipped at the left edge in side and selected-code chats.</p>
     <p>0.9.6: extend declared IntelliJ IDEA compatibility through the 2026.3 release branch (263.*). No chat behavior changes.</p>

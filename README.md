@@ -16,19 +16,20 @@ Agent Bridge is a free, MIT-licensed plugin. It requires no JetBrains AI subscri
 - Discover related project files with bounded text-based retrieval.
 - Choose a provider and model from one compact menu; manage accounts through the gear.
 - Keep the conversation when switching providers/models, or choose **Start fresh**.
+- Save chats per project and resume, rename or delete them from **Saved chats**, even after restarting the IDE.
 - Review supported changes in IntelliJ’s diff viewer, apply them to editor buffers, and Undo.
 - Press **Enter** to send and **Shift+Enter** for a new line. Cmd/Ctrl+Enter also sends.
 
-## Install the 0.9.8 preview
+## Install the 0.10.0 preview
 
 Requires **IntelliJ IDEA 2024.3.2.2 through 2026.3.x** (builds `243.23654.189` through `263.*`) and at least one installed provider CLI. No Ultimate-only dependency is declared.
 
-1. Install [Agent Bridge from JetBrains Marketplace](https://plugins.jetbrains.com/plugin/34567-agent-bridge) in the IDE, or use the installable ZIP from a successful [compatibility workflow](https://github.com/shbhmrzd/agent-bridge-intellij/actions/workflows/compatibility.yml) to test 0.9.8 before Marketplace approval. Extract the Actions artifact wrapper to find the plugin ZIP; do not install GitHub’s source-code archive.
-2. If using a ZIP, open **Settings → Plugins → gear → Install Plugin from Disk**, select `agent-bridge-0.9.8.zip`, and restart if prompted.
+1. Install [Agent Bridge from JetBrains Marketplace](https://plugins.jetbrains.com/plugin/34567-agent-bridge) in the IDE, or use the installable ZIP from a successful [compatibility workflow](https://github.com/shbhmrzd/agent-bridge-intellij/actions/workflows/compatibility.yml) to test 0.10.0 before Marketplace approval. Extract the Actions artifact wrapper to find the plugin ZIP; do not install GitHub’s source-code archive.
+2. If using a ZIP, open **Settings → Plugins → gear → Install Plugin from Disk**, select `agent-bridge-0.10.0.zip`, and restart if prompted.
 3. Open **View → Tool Windows → Agent Bridge**, select your provider, and use **gear → Sign in** if needed.
 4. Open a source file and ask: “Explain this file and identify one edge case.”
 
-**Upgrading from 0.8.x:** uninstall the old Agent Bridge preview first. Version 0.9.0 uses the public ID `io.github.shbhmrzd.agentbridge` instead of `dev.agentbridge.intellij`. Do not keep both installed. Chat history is not persisted; finish or copy any conversation you need before restarting. See [migration details](docs/MIGRATION.md).
+**Upgrading from 0.8.x:** uninstall the old Agent Bridge preview first. Version 0.9.0 uses the public ID `io.github.shbhmrzd.agentbridge` instead of `dev.agentbridge.intellij`. Do not keep both installed. Versions before 0.10.0 did not save chat history; copy conversations you need before upgrading from those versions. See [migration details](docs/MIGRATION.md).
 
 Marketplace updates become available after JetBrains review. A locally built ZIP can be installed directly for testing.
 
@@ -61,9 +62,19 @@ The plugin does not collect account passwords or read saved credential files. Pr
 
 Switching provider or model after sending a message offers **Continue with context**, **Start fresh**, and **Cancel**. Continue keeps visible messages and sends recent completed exchanges to the new provider on the next question. Start fresh clears the conversation. Both keep your draft and attachments; Cancel leaves the current session intact.
 
-Handoff is limited to 12 completed exchanges / 48,000 text characters, with individual messages capped at 12,000 characters. Failed or interrupted responses, old file snapshots and CLI tool state are excluded. New editor snapshots take precedence over historical code. Chats are separate between sidebar and selection popups and are not restored after restart.
+Handoff is limited to 12 completed exchanges / 48,000 text characters, with individual messages capped at 12,000 characters. Failed or interrupted responses, old file snapshots and CLI tool state are excluded. New editor snapshots take precedence over historical code. Sidebar and selection chats share the project’s **Saved chats** list. A saved conversation can be open in one chat surface at a time.
 
 Automatic context is bounded retrieval, not a complete repository upload or semantic index. The plugin attaches at most 12 files within its context budget. The CLI’s read tools may inspect additional files under its own policies. Disable automatic retrieval under **gear → Find related project files**, or choose files explicitly.
+
+### Saved conversations
+
+Messages save automatically on this device. Open **Saved chats** in the sidebar, or **gear → Saved chats** in a selection popup, then select a conversation and choose **Resume**, **Rename…**, or **Delete…**. **New chat** and **Start fresh** preserve the previous saved conversation. Delete asks for confirmation and removes the local copy; CLI/provider history is separate.
+
+Resume restores the last provider/model and recent messages into a fresh CLI session. Reattach any files you need; the next request captures current editor buffers (or the current popup’s selection). Drafts, attachments, old editor snapshots, authentication details and CLI session IDs are not restored. Completed exchanges provide context; failed/interrupted exchanges remain visible but are excluded from that context. Old edit payloads are omitted; request a fresh suggestion before applying changes.
+
+Storage is unencrypted JSON under the IDE configuration directory, in `agent-bridge/conversations/<project-path-hash>/`, outside the repository. It can contain code or sensitive text included in your messages. It is scoped to the IDE profile and project folder path; moving a project does not migrate its history. The plugin provides no cloud sync.
+
+Each project holds up to 100 saved chats. Each chat retains its latest 100 exchanges within 2,000,000 text characters; older exchanges are dropped with an explicit notice. The chat view displays the latest 15 exchanges, and resumed provider context uses the smaller handoff limits above. A full archive asks you to delete a chat rather than silently removing one. Questions are saved when sent; answers save on completion, Stop or normal chat closure. A process crash can lose the in-progress answer. Storage errors appear below the composer.
 
 ## Review changes
 
@@ -104,7 +115,7 @@ python3 scripts/build.py --ide "$IDEA_HOME" --test
 python3 -m unittest discover -s scripts/tests -v
 ```
 
-Expected results: **275 Java checks**, **5 Python checks**, and `build/agent-bridge-0.9.8.zip`. Checks print their results to the terminal and return a nonzero exit status on failure. The suite uses fake provider processes and performs no paid model requests. Some tests exercise real platform documents/background reads and headless Swing layouts; they do not launch an IDE window. Layout previews are written under `build/`.
+Expected results: **345 Java checks**, **5 Python checks**, and `build/agent-bridge-0.10.0.zip`. Checks print their results to the terminal and return a nonzero exit status on failure. The suite uses fake provider processes and performs no paid model requests. Some tests exercise real platform documents/background reads and headless Swing layouts; they do not launch an IDE window. Layout previews are written under `build/`.
 
 For packaging alone, omit `--test`. To keep a build separate, add `--output build/local`. No Gradle/Maven setup or Python package installation is required. SDK libraries are used for compilation and are not bundled in the plugin.
 
@@ -129,7 +140,7 @@ The main areas are `src/main/java/dev/agentbridge/` (UI, context and providers),
 
 | Problem | Next step |
 | --- | --- |
-| Failed to load plugin descriptor | Install `agent-bridge-0.9.8.zip`, not a source-code ZIP or the outer GitHub Actions download wrapper. |
+| Failed to load plugin descriptor | Install `agent-bridge-0.10.0.zip`, not a source-code ZIP or the outer GitHub Actions download wrapper. |
 | IDE says incompatible | Check the exact build under Help → About; the minimum is `243.23654.189` and the maximum declared branch is `263.*`. |
 | CLI not found or login differs from terminal | Set the resolved executable’s absolute path in gear → Settings; the IDE can inherit a different PATH. |
 | Model requires a newer CLI | Update that exact CLI using its supported installer/update command, save Settings to restart the session, then refresh models. Updating a separate desktop app may not update the executable configured in the plugin. |

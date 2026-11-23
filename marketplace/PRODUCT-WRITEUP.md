@@ -85,7 +85,7 @@ The descriptor supports IntelliJ IDEA **2024.3.2.2 through 2026.3.x**, builds **
 
 Install at least one supported CLI and obtain access to that provider. Enable IntelliJ’s bundled Terminal plugin for button-based Claude/Copilot login. Codex login does not require that Terminal integration.
 
-The plugin is a conversational assistant with explicit edit review. It does not provide ghost-text completion, image input, autonomous background implementation, persistent IDE chat history, or full feature parity with another AI editor.
+The plugin is a conversational assistant with explicit edit review. It does not provide ghost-text completion, image input, autonomous background implementation, or full feature parity with another AI editor.
 
 ## Questions before installing
 
@@ -99,9 +99,9 @@ The plugin is a conversational assistant with explicit edit review. It does not 
 
 **Where do settings live?** The plugin stores selected provider, model ID, executable path and sign-in mode in IDE settings. CLI credentials and provider-controlled histories remain the CLI’s responsibility.
 
-**Can I use different providers in one conversation?** Yes: choose Continue with context when switching. The next question sends bounded recent completed exchanges to the new provider; it does not migrate native tool state. Start fresh discards that history. Inline and sidebar chats are separate.
+**Can I use different providers in one conversation?** Yes: choose Continue with context when switching. The next question sends bounded recent completed exchanges to the new provider; it does not migrate native tool state. Start fresh preserves the old saved chat. Inline and sidebar chats share a project’s Saved chats list; each saved conversation can be active in one surface at a time.
 
-**What happens when I close inline chat?** Its active session is cancelled and its visible transcript is discarded. Closing a chat does not erase provider-side or CLI-managed history.
+**What happens when I close inline chat?** Its active session is cancelled and its conversation remains in Saved chats, including interrupted response text on normal closure. Resume, rename or delete it there. Closing or deleting a local chat does not erase provider-side or CLI-managed history.
 
 **What is verified today?** The 0.9.4 build passed 248 Java checks, 5 Python checks and binary/API verification on four IDE builds without muted rules. Native UI and live-provider smoke testing remain separate; see [compatibility evidence](../docs/COMPATIBILITY.md).
 

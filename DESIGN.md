@@ -1,6 +1,6 @@
 # Agent Bridge architecture
 
-This document describes the 0.9.0 implementation. Agent Bridge is a native Java/Swing IntelliJ plugin with installed-CLI adapters for Claude, Codex and Copilot. It does not include a provider backend, embedding service or credential store.
+This document describes the 0.10.0 implementation. Agent Bridge is a native Java/Swing IntelliJ plugin with installed-CLI adapters for Claude, Codex and Copilot. It does not include a provider backend, embedding service or credential store.
 
 ## UI and lifecycle
 
@@ -38,13 +38,17 @@ A different provider/model starts a new native session. `ConversationHistory` ca
 
 The visible conversation remains in place. Up to 12 exchanges and 48,000 text characters are handed off; each message is capped at 12,000 characters, with explicit truncation markers. The prompt encodes history as JSON data before fresh editor snapshots and the current request. Existing sessions do not receive duplicated history each turn. Fresh/Cancel semantics preserve drafts and attachments as documented in the README.
 
-History is in memory only. A restarted session after an error, Stop or settings/login reset can receive retained completed exchanges. Failed and partial responses are not marked completed. Starting a new chat clears retained context.
+`ProjectConversations` owns a shared `ConversationArchive` for the project. Its single worker serializes disk operations and leases open conversations to one chat surface at a time. `ConversationStore` writes versioned JSON via private temporary files and atomic replacement in the IDE configuration directory, keyed by normalized project path. It never stores editor snapshots, native session IDs or authentication-flow state. Structured edit payloads are removed from saved answers.
+
+Questions save immediately as interrupted; completion, failure, Stop and normal disposal settle their status and response. Completed turns alone rebuild `ConversationHistory` on resume. Resume starts a new provider session and captures fresh context for the next question. New chat/Start fresh release the old conversation without deleting it. Deletion is explicit; late completion cannot recreate a missing file. Queued saves drain on service disposal.
+
+Storage is capped at 100 chats per project and the latest 100 exchanges / 2,000,000 text characters per chat, with a truncation flag. The UI renders the latest 15 exchanges (30 cards), and provider handoff retains its smaller limits. Corrupt/unknown files are preserved and listed as unreadable. Save errors remain visible below the composer.
 
 ## Authentication and models
 
 `AccountAuth`, `LoginLauncher` and `CodexAuth` delegate account operations to installed CLIs. Claude/Copilot browser login starts through an optional IntelliJ Terminal integration. Codex uses CLI-managed account endpoints, with browser/device flows and correlated completion/cancellation events. Provider CLIs own credential storage and refresh.
 
-The plugin stores only settings such as provider, executable, model ID and sign-in mode. Temporary login URLs/device codes are UI state. They are not persisted in chat history. Model discovery uses metadata endpoints without generating a coding request; CLI defaults and custom IDs remain available when discovery fails.
+The plugin stores settings such as provider, executable, model ID and sign-in mode, as well as local conversation transcripts described above. Temporary login URLs/device codes are UI state. They are not persisted in chat history. Model discovery uses metadata endpoints without generating a coding request; CLI defaults and custom IDs remain available when discovery fails.
 
 ## Suggested edits
 

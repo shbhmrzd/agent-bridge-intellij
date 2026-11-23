@@ -40,6 +40,10 @@ if args.test:
                     '-d', str(classes), *map(str, tests)], check=True)
 if args.test:
     subprocess.run([str(java_home / 'bin/java'), '-ea', '-Djava.awt.headless=true', '-cp', str(classes) + os.pathsep + classpath,
+                    'dev.agentbridge.ChatPersistenceTest', str(ROOT / 'scripts/fake_agent.py')], check=True, timeout=90)
+    subprocess.run([str(java_home / 'bin/java'), '-ea', '-Djava.awt.headless=true', '-cp', str(classes) + os.pathsep + classpath,
+                    'dev.agentbridge.ConversationArchiveTest', str(ROOT / 'scripts/fake_agent.py'), str(build)], check=True, timeout=90)
+    subprocess.run([str(java_home / 'bin/java'), '-ea', '-Djava.awt.headless=true', '-cp', str(classes) + os.pathsep + classpath,
                     'dev.agentbridge.MarkdownTextTest'], check=True)
     subprocess.run([str(java_home / 'bin/java'), '-ea', '-cp', str(classes) + os.pathsep + classpath,
                     'dev.agentbridge.ConversationHistoryTest'], check=True)

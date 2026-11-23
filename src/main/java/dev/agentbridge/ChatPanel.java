@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 final class ChatPanel implements Disposable {
     private final Project project;
     private final SelectionContext selection;
+    private final java.util.function.Supplier<com.intellij.openapi.editor.Editor> selectedEditor;
     private final ChatSurface view = new ChatSurface();
     // At most twelve documents retained while explicitly attached; released on removal/disposal.
     private final Map<VirtualFile, Document> pinned = new LinkedHashMap<>();
@@ -57,6 +58,11 @@ final class ChatPanel implements Disposable {
     private String executable;
     private String model;
     private final ConversationHistory history = new ConversationHistory();
+    private final ConversationArchive archive;
+    private final Object savedOwner = new Object();
+    private String conversationId = UUID.randomUUID().toString();
+    private String activeTurnId;
+    private boolean archiveBusy;
     private AgentSession.Provider activeProvider;
     private boolean updatingProvider;
     private boolean updatingModels;
@@ -75,8 +81,14 @@ final class ChatPanel implements Disposable {
         this(project, null);
     }
     ChatPanel(Project project, SelectionContext selection) {
+        this(project, selection, project.getService(ProjectConversations.class).archive,
+            () -> FileEditorManager.getInstance(project).getSelectedTextEditor());
+    }
+    ChatPanel(Project project, SelectionContext selection, ConversationArchive archive,
+              java.util.function.Supplier<com.intellij.openapi.editor.Editor> selectedEditor) {
         this.project = project;
         this.selection = selection;
+        this.archive = archive; this.selectedEditor = selectedEditor;
         if (selection != null) view.inlineMode();
         String remembered = PropertiesComponent.getInstance().getValue("agentBridge.provider", "Claude");
         try { view.provider.setSelectedItem(AgentSession.Provider.valueOf(remembered)); }
@@ -84,14 +96,16 @@ final class ChatPanel implements Disposable {
         loadSettings();
         activeProvider = chosen();
         view.provider.addActionListener(e -> selectProvider());
-        view.fresh.addActionListener(e -> { reset(); history.clear(); view.welcome(); view.composer.requestFocusInWindow(); });
+        view.fresh.addActionListener(e -> newChat());
+        view.saved.addActionListener(e -> savedChats());
         view.settings.addActionListener(e -> settings());
         view.signIn.addActionListener(e -> signIn());
         view.checkLogin.addActionListener(e -> checkLogin());
         view.send.addActionListener(e -> send());
         view.stop.addActionListener(e -> {
             flush();
-            if (activeCard != null) { activeCard.append("\n\nStopped. No suggestions from this partial response will be applied."); activeCard.render(); }
+            saveActive(ConversationStore.Status.INTERRUPTED);
+            if (activeCard != null) { activeCard.notice("Stopped. No suggestions from this partial response will be applied."); activeCard.render(); }
             reset(); setStatus("Stopped · Next message starts a new session");
         });
         view.addFiles.addActionListener(e -> addFiles());
@@ -123,6 +137,130 @@ final class ChatPanel implements Disposable {
     JComponent preferredFocus() { return view.composer; }
     private AgentSession.Provider chosen() { return (AgentSession.Provider)view.provider.getSelectedItem(); }
     private void setStatus(String text) { view.status.setText(text); view.status.setToolTipText(text); }
+    private void newChat() {
+        if (busy || loading || archiveBusy || disposed) return;
+        reset(); history.clear(); archive.release(savedOwner); conversationId = UUID.randomUUID().toString();
+        view.welcome(); savedState("Chats save on this device · Resume from Saved chats");
+        view.composer.requestFocusInWindow();
+    }
+    private void savedState(String message) {
+        view.savedState.setText(message); view.savedState.setToolTipText(message);
+    }
+    private static String archiveError(Throwable error) {
+        while (error.getCause() != null) error = error.getCause();
+        return Optional.ofNullable(error.getMessage()).orElse("Saved conversations are unavailable.");
+    }
+    private void saving(String id, CompletableFuture<ConversationStore.Chat> result) {
+        savedState("Saving conversation…");
+        result.whenComplete((chat, error) -> SwingUtilities.invokeLater(() -> {
+            if (disposed || !id.equals(conversationId)) return;
+            if (error != null) savedState("Not saved: " + archiveError(error));
+            else savedState("Saved · " + chat.title() + (chat.truncated() ? " · Older exchanges omitted" : ""));
+        }));
+    }
+    private void saveActive(ConversationStore.Status status) {
+        if (activeTurnId == null || activeCard == null) return;
+        String turnId = activeTurnId; activeTurnId = null;
+        saving(conversationId, archive.finish(conversationId, savedOwner, turnId, activeCard.source.toString(), status));
+    }
+    private void resume(ConversationStore.Chat chat) {
+        reset(); conversationId = chat.id(); history.restore(chat); view.restore(chat);
+        // Resume in a fresh native session with the last provider/model, never stale CLI state.
+        var last = chat.turns().getLast();
+        updatingProvider = true;
+        try {
+            view.provider.setSelectedItem(AgentSession.Provider.valueOf(last.provider())); activeProvider = chosen(); loadSettings();
+        } finally { updatingProvider = false; }
+        model = last.model(); renderModels();
+        PropertiesComponent.getInstance().setValue("agentBridge.provider", activeProvider.name());
+        // Attachments and selections belong to this surface; never resurrect old file buffers.
+        pinned.clear(); folders.clear(); view.composer.setText(""); refreshContext();
+        savedState("Saved · " + chat.title() + (chat.truncated() ? " · Older exchanges omitted" : ""));
+        setStatus("Resumed · Recent completed exchanges + fresh files on your next message"
+            + (chat.turns().size() > 15 ? " · Showing latest 15 exchanges" : ""));
+        view.composer.requestFocusInWindow();
+    }
+    private void savedChats() {
+        if (busy || loading || archiveBusy || disposed) return;
+        class SavedDialog extends DialogWrapper {
+            private final SavedChatsPanel content = new SavedChatsPanel();
+            private boolean working, closed;
+            SavedDialog() {
+                super(project); setTitle("Saved conversations · " + project.getName()); setOKButtonText("Resume"); setCancelButtonText("Close"); init();
+                content.list.addListSelectionListener(e -> controls());
+                content.rename.addActionListener(e -> rename()); content.delete.addActionListener(e -> delete());
+                load(conversationId);
+            }
+            @Override protected JComponent createCenterPanel() { return content; }
+            private void controls() {
+                var selected = content.list.getSelectedValue(); content.enabled(!working);
+                getOKAction().setEnabled(!working && selected != null && selected.readable());
+            }
+            private void load(String selected) {
+                working = true; controls();
+                archive.list().whenComplete((entries, error) -> SwingUtilities.invokeLater(() -> {
+                    if (closed || disposed) return;
+                    working = false;
+                    if (error == null) content.entries(entries, selected); else content.status.setText(archiveError(error));
+                    controls();
+                }));
+            }
+            private void change(CompletableFuture<Void> operation, String selected, Runnable success) {
+                working = true; controls();
+                operation.whenComplete((ignored, error) -> SwingUtilities.invokeLater(() -> {
+                    if (disposed) return;
+                    if (error == null) success.run();
+                    if (closed) return;
+                    if (error == null) load(selected);
+                    else { working = false; content.status.setText(archiveError(error)); controls(); }
+                }));
+            }
+            private void rename() {
+                var selected = content.list.getSelectedValue(); if (working || selected == null) return;
+                String name = Messages.showInputDialog(project, "Conversation name", "Rename conversation", null, selected.title(), null);
+                if (name == null || closed || disposed) return;
+                try {
+                    String title = ConversationStore.title(name);
+                    change(archive.rename(selected.id(), savedOwner, title), selected.id(), () -> {
+                        if (selected.id().equals(conversationId)) savedState("Saved · " + title);
+                    });
+                } catch (IllegalArgumentException invalid) { content.status.setText(invalid.getMessage()); }
+            }
+            private void delete() {
+                var selected = content.list.getSelectedValue(); if (working || selected == null) return;
+                if (Messages.showYesNoDialog(project, "Delete this saved conversation from this device?\n\n"
+                    + "This cannot be undone. Provider-side history is not deleted.", "Delete saved conversation", Messages.getQuestionIcon()) != Messages.YES
+                    || closed || disposed) return;
+                change(archive.delete(selected.id(), savedOwner), null, () -> {
+                    if (selected.id().equals(conversationId)) newChat();
+                });
+            }
+            @Override protected void doOKAction() {
+                var selected = content.list.getSelectedValue(); if (working || selected == null) return;
+                if (selected.id().equals(conversationId)) { super.doOKAction(); return; }
+                if (!view.composer.getText().isBlank() && Messages.showYesNoDialog(project,
+                    "Resume this saved conversation and discard the current unsent draft?", "Resume saved conversation",
+                    Messages.getQuestionIcon()) != Messages.YES) return;
+                working = true; archiveBusy = true; controls(); updateButtons();
+                getCancelAction().setEnabled(false);
+                archive.resume(selected.id(), savedOwner).whenComplete((chat, error) -> SwingUtilities.invokeLater(() -> {
+                    archiveBusy = false;
+                    if (disposed) { archive.release(savedOwner); return; }
+                    updateButtons();
+                    if (error != null) {
+                        if (!closed) { working = false; content.status.setText(archiveError(error)); controls(); getCancelAction().setEnabled(true); }
+                        return;
+                    }
+                    // Closing while loading must not unexpectedly replace the visible conversation.
+                    if (closed) { archive.release(savedOwner); return; }
+                    resume(chat); super.doOKAction();
+                }));
+            }
+            @Override public void doCancelAction() { if (!archiveBusy) super.doCancelAction(); }
+            @Override protected void dispose() { closed = true; super.dispose(); }
+        }
+        new SavedDialog().show();
+    }
     private ConversationHistory.Choice switchChoice(String target) {
         if (!history.hasConversation()) return ConversationHistory.Choice.FRESH;
         int result = Messages.showDialog(project,
@@ -130,14 +268,17 @@ final class ChatPanel implements Disposable {
                 + "(including code in messages) to " + target + " with your next question.\n"
                 + "Up to 12 exchanges / 48,000 text characters are carried over; long messages are shortened.\n"
                 + "Interrupted or failed responses and earlier file snapshots are not carried over.\n\n"
-                + "Start fresh clears the conversation. Both choices keep your draft and attached files.",
+                + "Start fresh opens a new chat; the previous chat stays saved. Both choices keep your draft and attached files.",
             "Switch provider or model", new String[]{"Continue with context", "Start fresh", "Cancel"},
             0, Messages.getQuestionIcon());
         return ConversationHistory.choice(result);
     }
     private void switched(ConversationHistory.Choice choice) {
         history.apply(choice);
-        if (choice == ConversationHistory.Choice.FRESH) view.welcome();
+        if (choice == ConversationHistory.Choice.FRESH) {
+            archive.release(savedOwner); conversationId = UUID.randomUUID().toString(); view.welcome();
+            savedState("Chats save on this device · Resume from Saved chats");
+        }
         setStatus(choice == ConversationHistory.Choice.FRESH ? "Ready · New conversation"
             : "Conversation kept · Recent completed exchanges included with your next question");
         SwingUtilities.invokeLater(() -> { if (!disposed) view.composer.requestFocusInWindow(); });
@@ -149,7 +290,7 @@ final class ChatPanel implements Disposable {
         updatingProvider = true;
         try { view.provider.setSelectedItem(activeProvider); view.refreshSelector(); }
         finally { updatingProvider = false; }
-        if (busy || loading) return;
+        if (busy || loading || archiveBusy) return;
         ConversationHistory.Choice choice = switchChoice(next.name());
         if (choice == ConversationHistory.Choice.CANCEL || disposed) return;
         reset();
@@ -189,7 +330,7 @@ final class ChatPanel implements Disposable {
         } finally { updatingModels = false; }
     }
     private void selectModel() {
-        if (updatingModels || busy || loading || disposed) return;
+        if (updatingModels || busy || loading || archiveBusy || disposed) return;
         ModelCatalog.Option option = (ModelCatalog.Option)view.model.getSelectedItem();
         if (option == null) return;
         String next = option.id();
@@ -420,7 +561,7 @@ final class ChatPanel implements Disposable {
     }
     private VirtualFile activeFile() {
         if (selection != null) return FileDocumentManager.getInstance().getFile(selection.document);
-        var editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+        var editor = selectedEditor.get();
         return editor == null ? null : FileDocumentManager.getInstance().getFile(editor.getDocument());
     }
     private void refreshContext() {
@@ -515,13 +656,13 @@ final class ChatPanel implements Disposable {
         result.put(relative(file), new Snapshot(file, new WeakReference<>(document), document.getModificationStamp(), document.getText()));
     }
     private void send() {
-        if (busy || loading || disposed || logins.containsKey(chosen()) || view.composer.getText().isBlank()) return;
+        if (busy || loading || archiveBusy || disposed || logins.containsKey(chosen()) || view.composer.getText().isBlank()) return;
         if (project.getBasePath() == null) { setStatus("Open a project folder first."); return; }
         String text = view.composer.getText().trim();
         if (text.length() > 16000) { setStatus("Message exceeds 16,000 characters."); return; }
         refreshContext();
         // Capture UI choices on EDT. Document/VFS reads run on the context worker.
-        var editor = FileEditorManager.getInstance(project).getSelectedTextEditor();
+        var editor = selectedEditor.get();
         boolean includeCurrent = view.currentFile.isSelected();
         Map<VirtualFile, Document> attachments = Collections.unmodifiableMap(new LinkedHashMap<>(pinned));
         List<VirtualFile> scopes = new ArrayList<>(folders);
@@ -561,6 +702,9 @@ final class ChatPanel implements Disposable {
         ChatSurface.Card question = view.message("You", text); question.render();
         question.context(prepared.packet().files().stream().map(ContextPacket.File::path).toList(), scopeLabel);
         view.composer.setText(""); activeCard = view.message(chosen().name(), "");
+        activeTurnId = UUID.randomUUID().toString();
+        saving(conversationId, archive.begin(conversationId, savedOwner,
+            new ConversationStore.Turn(activeTurnId, turnProvider, turnModel, text, "", ConversationStore.Status.INTERRUPTED)));
         ChatSurface.Card card = activeCard;
         long generation = epoch;
         if (session == null) session = new AgentSession(chosen(), executable, Path.of(project.getBasePath()), model, false, listener(generation));
@@ -572,15 +716,17 @@ final class ChatPanel implements Disposable {
                 ui(generation, () -> {
                     flush(); if (generation != epoch) return;
                     history.completed(turnProvider, turnModel, text, card.source.toString());
+                    saveActive(ConversationStore.Status.COMPLETED);
                     busy = false; activeCard = null; updateButtons(); finish(card, prepared); setStatus("Done · " + contextLabel);
                 });
             } catch (Exception error) {
                 current.close();
                 ui(generation, () -> {
                     flush(); if (generation != epoch) return;
+                    saveActive(ConversationStore.Status.FAILED);
                     session = null; busy = false; activeCard = null; updateButtons();
                     Throwable cause = error; while (cause.getCause() != null) cause = cause.getCause();
-                    card.append("\n\nRequest failed: " + Optional.ofNullable(cause.getMessage()).orElse(cause.getClass().getSimpleName())); card.render();
+                    card.notice("Request failed: " + Optional.ofNullable(cause.getMessage()).orElse(cause.getClass().getSimpleName())); card.render();
                     setStatus("Request failed · Open ⚙ to check login or sign in");
                 });
             }
@@ -674,7 +820,8 @@ final class ChatPanel implements Disposable {
         String s = pendingStatus.getAndSet(null); if (s != null) setStatus(s);
     }
     private void updateButtons() {
-        boolean canSend = !busy && !loading && !logins.containsKey(chosen());
+        boolean canSend = !busy && !loading && !archiveBusy && !logins.containsKey(chosen());
+        view.fresh.setEnabled(!busy && !loading && !archiveBusy); view.saved.setEnabled(!busy && !loading && !archiveBusy);
         view.send.setEnabled(canSend); view.send.setVisible(!busy && !loading); view.stop.setEnabled(busy || loading); view.stop.setVisible(busy || loading); view.provider.setEnabled(!busy && !loading);
         view.projectContext.setEnabled(!busy && !loading); view.model.setEnabled(!busy && !loading); view.composer.setEnabled(!loading);
         view.settings.setEnabled(!busy && !loading && !logins.containsKey(chosen()));
@@ -687,6 +834,7 @@ final class ChatPanel implements Disposable {
             : chosen() == AgentSession.Provider.Codex ? "Sign in with ChatGPT using Codex-managed OAuth" : "Start the installed CLI's browser login");
     }
     private void reset() {
+        saveActive(ConversationStore.Status.INTERRUPTED);
         epoch++; permissions.forEach(p -> p.complete(null)); permissions.clear();
         if (session != null) { AgentSession old = session; session = null; old.close(); }
         if (task != null) task.cancel(true);
@@ -702,6 +850,7 @@ final class ChatPanel implements Disposable {
         disposed = true; modelsGeneration++;
         if (modelsTask != null) modelsTask.cancel(true);
         reset(); history.clear(); pinned.clear(); folders.clear();
+        archive.release(savedOwner);
         if (selection != null) selection.dispose();
         for (LoginLauncher.Handle login : List.copyOf(logins.values())) {
             try { login.cancel(); } catch (RuntimeException ignored) { }

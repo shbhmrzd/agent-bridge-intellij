@@ -1,4 +1,4 @@
-# Data handling in Agent Bridge 0.9.2
+# Data handling in Agent Bridge 0.10.0
 
 Maintainer: [shbhmrzd](https://github.com/shbhmrzd). Support is available through [GitHub Issues](https://github.com/shbhmrzd/agent-bridge-intellij/issues) or [shbhmrzd@gmail.com](mailto:shbhmrzd@gmail.com). This disclosure describes the plugin implementation. It is not a statement about the provider’s own retention or training policies.
 
@@ -10,7 +10,7 @@ The plugin passes that material to the installed provider CLI. That CLI may comm
 
 The context toggle governs what Agent Bridge attaches automatically. It is not a filesystem sandbox for the CLI, its hooks, managed settings or provider-controlled behavior.
 
-When you select **Continue with context** after switching providers or models, the next question also sends recent completed user/assistant exchanges, including code in messages, to the selected provider. Transfer is limited to 12 exchanges / 48,000 text characters, with individual messages capped at 12,000 characters. Old attached-file snapshots and interrupted/failed exchanges are excluded. Start fresh clears this in-memory history; current file context may still be sent.
+When you select **Continue with context** after switching providers or models, the next question also sends recent completed user/assistant exchanges, including code in messages, to the selected provider. Transfer is limited to 12 exchanges / 48,000 text characters, with individual messages capped at 12,000 characters. Old attached-file snapshots and interrupted/failed exchanges are excluded. Resuming a saved chat uses the same completed-exchange limits and fresh editor context. Start fresh clears the active context but preserves the previous saved chat.
 
 ## Authentication
 
@@ -20,9 +20,13 @@ The plugin processes login status and temporary browser URLs/device codes needed
 
 ## Storage and services
 
-The reviewed source contains no plugin-operated backend or analytics service. It stores the selected provider, model ID, executable path and sign-in mode in IDE settings. Chat cards are held in memory and are not restored by the plugin after IDE restart.
+The reviewed source contains no plugin-operated backend or analytics service. It stores the selected provider, model ID, executable path and sign-in mode in IDE settings. Conversation messages, titles, provider/model labels, timestamps and completion status are saved automatically as unencrypted local JSON in the IDE configuration directory under `agent-bridge/conversations/<project-path-hash>/`. These files can contain code or sensitive material that appears in messages. They are outside the source repository and scoped to the IDE profile and project path. The plugin does not sync them to a backend.
 
-This does not mean nothing is logged or stored elsewhere: the IDE, operating system, CLI and provider can maintain their own logs, sessions and histories. Closing a popup or starting a new chat is not a provider-history deletion request.
+Saved chats exclude separate editor-buffer attachments, structured edit payloads, native CLI session IDs and authentication-flow data. Explicitly pasted credentials or sensitive text in a message would still be saved as message content. Questions save on send; responses save on completion, Stop or normal closure. An IDE/process crash may lose an in-progress response.
+
+Up to 100 chats are retained per project. Each chat keeps the latest 100 exchanges within 2,000,000 text characters; older exchanges are omitted with a notice. The chat view shows the latest 15 exchanges. A full archive refuses new saves and shows an error until space is freed. Unreadable files are preserved for recovery or explicit deletion. Temporary files use owner-only permissions where the filesystem supports them.
+
+This does not mean nothing is logged or stored elsewhere: the IDE, operating system, CLI and provider can maintain their own logs, sessions and histories. Closing a popup or starting a new chat preserves saved chats. **Saved chats → Delete** removes that local conversation after confirmation; it does not delete provider history, operating-system backups or other external copies.
 
 Codex model discovery can start a short-lived CLI process to request model metadata. It sends no model prompt or coding-thread request. Authentication/status checks likewise use their provider-specific flows rather than a coding prompt.
 

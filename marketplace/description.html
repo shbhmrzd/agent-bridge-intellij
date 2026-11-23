@@ -8,6 +8,7 @@
 <li><b>Project context:</b> attach files and folders through IntelliJ’s project picker, or enable a bounded search for related project files.</li>
 <li><b>Compact model selection:</b> choose your provider and model in one menu. Codex loads its CLI catalog with explicit version and variant labels. Claude and Copilot offer documented versioned choices; CLI defaults, aliases and custom model IDs remain available. Account and CLI support determine which choices work.</li>
 <li><b>Reviewable changes:</b> inspect supported suggestions in IntelliJ’s diff view, apply the reviewed proposal, and use Undo. Multi-file proposals apply together.</li>
+<li><b>Saved conversations:</b> automatically save chats locally per project. Resume, rename or delete them from Saved chats, including after an IDE restart.</li>
 <li><b>Conversation continuity:</b> continue with recent context or start fresh when switching provider or model.</li>
 <li><b>Keyboard first:</b> Enter sends; Shift+Enter inserts a new line.</li>
 <li><b>Account controls:</b> sign in, check login or change configuration from the settings gear.</li>
@@ -26,5 +27,5 @@
 <h3>Current scope</h3>
 <p>This preview targets IntelliJ IDEA 2024.3.2.2 through 2026.3.x (builds 243.23654.189 through 263.*). Its declared dependencies do not require Ultimate features. A working provider CLI and eligible account are required.</p>
 <p>Automatic context uses bounded text-based retrieval; it does not upload the entire project. Provider tools may read additional project files under their own policies. Code supplied as context is processed by the selected provider according to its configuration and terms.</p>
-<p>Suggestions currently edit existing attached text files. File creation, deletion, renaming, inline ghost-text completion and restoring IDE chat history after restart are not supported. The selected range focuses a question; review the diff to check the actual edit scope.</p>
+<p>Suggestions currently edit existing attached text files. File creation, deletion, renaming and inline ghost-text completion are not supported. Conversations save locally per project; use Saved chats to resume, rename or delete them after restart. Resume uses recent completed exchanges and fresh editor context. The selected range focuses a question; review the diff to check the actual edit scope.</p>
 <p>Agent Bridge is an independent integration, not an official OpenAI, Anthropic, GitHub or JetBrains product.</p>

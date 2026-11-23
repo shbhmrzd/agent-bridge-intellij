@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.0 - 2026-11-23
+
+- Save conversations locally per project, with resume, rename and delete controls in both chat surfaces.
+- Preserve completed and interrupted exchanges across popup closure and IDE restart; resume completed context with fresh editor buffers.
+- Keep saved transcripts outside project files, write them atomically, and report storage failures without overwriting unreadable data.
+- Prevent concurrent edits to the same saved conversation and stale completions from restoring deleted chats.
+- Document storage, retention limits, and the difference between local deletion and provider history.
+
 ## 0.9.8 - 2026-11-14
 
 - Honor native Swing text smoothing for the question placeholder in both chat views.

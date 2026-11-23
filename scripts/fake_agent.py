@@ -2,6 +2,7 @@
 """Deterministic stdio fixture; never calls a model or reads project files."""
 import json
 import sys
+import time
 
 def emit(value):
     data = json.dumps(value) + '\n'
@@ -27,6 +28,11 @@ if '-p' in sys.argv:
     validate_handoff(text)
     emit({'type': 'system', 'session_id': 'fixture-session'})
     emit({'type': 'stream_event', 'event': {'delta': {'type': 'text_delta', 'text': 'Claude fixture reply'}}})
+    if text.endswith('USER_REQUEST\nfixture-slow'):
+        time.sleep(30)
+    if text.endswith('USER_REQUEST\nfixture-failure'):
+        emit({'type': 'result', 'is_error': True, 'result': 'fixture failure'})
+        sys.exit(1)
     emit({'type': 'result', 'is_error': False, 'session_id': 'fixture-session', 'result': 'Claude fixture reply'})
     sys.exit(0)
 

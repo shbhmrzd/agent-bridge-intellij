@@ -65,3 +65,11 @@ Automated checks cover history bounds, escaping, cancellation/fresh/continue sta
 - Close the popup/project during a request; confirm owned provider processes exit.
 
 Before Marketplace submission, set `shbhmrzd@gmail.com` in the vendor profile and verify name/ID availability. The descriptor can also carry the contact address for display in the IDE. Rebuild after metadata changes. Keep the MIT license in the packaged JAR and inspect the ZIP for test classes, credentials and private files.
+
+## Saved-conversation release checks
+
+- Send a question, close/reopen the chat, and restart the IDE. Resume the saved conversation and verify a follow-up carries only completed history with fresh editor buffers.
+- Rename a saved conversation, restart and verify the new name. Delete it with confirmation, verify it disappears, and ensure pending callbacks cannot recreate it. Cancel deletion and confirm no change.
+- Confirm a second project has a separate list. Open a chat in the sidebar and verify a popup cannot concurrently resume, rename or delete it. New chat or closing the owning surface releases it.
+- Stop and fail requests; verify their saved labels and exclusion from resumed context. Old edit suggestions must not expose Apply/Review actions after resume.
+- Exercise unreadable storage, full archives, pending writes on disposal, and narrow light/dark layouts. Automated `ConversationArchiveTest` and `ChatPersistenceTest` cover persistence, provider fixtures, controller lifecycle and Swing rendering.

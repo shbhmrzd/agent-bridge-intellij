@@ -11,6 +11,8 @@ final class ChatSurface extends JPanel {
     final JComboBox<ModelCatalog.Option> model = new JComboBox<>();
     final JButton reloadModels = quiet("↻");
     final JButton settings = quiet("Settings"), fresh = quiet("New chat");
+    final JButton saved = quiet("Saved chats");
+    final JLabel savedState = new JLabel("Chats save on this device · Resume from Saved chats");
     final JLabel account = new JLabel("Uses your CLI account");
     final JButton signIn = quiet("Sign in"), checkLogin = quiet("Check login");
     final JPanel authHint = new JPanel(new BorderLayout(4, 4));
@@ -34,7 +36,8 @@ final class ChatSurface extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(8, 8, 6, 8));
         setMinimumSize(new Dimension(280, 160));
         fresh.setToolTipText("New conversation"); fresh.getAccessibleContext().setAccessibleName("New conversation");
-        toolbar.add(fresh); toolbar.add(gear);
+        saved.setToolTipText("Resume, rename or delete conversations saved for this project");
+        toolbar.add(saved); toolbar.add(fresh); toolbar.add(gear);
         header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
         toolbar.setAlignmentX(LEFT_ALIGNMENT); header.add(toolbar);
         authHint.setAlignmentX(LEFT_ALIGNMENT); header.add(authHint); add(header, BorderLayout.NORTH);
@@ -98,7 +101,10 @@ final class ChatSurface extends JPanel {
         submit.add(stop); submit.add(send); stop.setVisible(false); footer.add(submit, BorderLayout.EAST);
         prompt.add(footer); bottom.add(prompt);
         status.setAlignmentX(LEFT_ALIGNMENT); status.setForeground(muted()); status.setFont(status.getFont().deriveFont(Font.PLAIN, 11f));
-        status.setBorder(BorderFactory.createEmptyBorder(3, 2, 0, 0)); bottom.add(status); add(bottom, BorderLayout.SOUTH);
+        status.setBorder(BorderFactory.createEmptyBorder(3, 2, 0, 0)); bottom.add(status);
+        savedState.setAlignmentX(LEFT_ALIGNMENT); savedState.setForeground(muted());
+        savedState.setFont(status.getFont()); savedState.putClientProperty("html.disable", true);
+        savedState.setBorder(BorderFactory.createEmptyBorder(2, 2, 0, 0)); bottom.add(savedState); add(bottom, BorderLayout.SOUTH);
         provider.setToolTipText("Provider");
         currentFile.setToolTipText("Include current file");
         addFiles.setToolTipText("Add project files or folders");
@@ -206,6 +212,7 @@ final class ChatSurface extends JPanel {
     }
     JPopupMenu settingsMenu() {
         JPopupMenu menu = new JPopupMenu();
+        menu.add(command("Saved chats…", saved)); menu.add(command("New chat", fresh)); menu.addSeparator();
         JMenuItem info = menuFont(new JMenuItem(provider.getSelectedItem() + " · " + account.getText())); info.setEnabled(false); menu.add(info);
         menu.add(command("Check login", checkLogin)); menu.add(command(signIn.getText(), signIn)); menu.addSeparator();
         menu.add(command("Settings…", settings));
@@ -289,6 +296,17 @@ final class ChatSurface extends JPanel {
     void welcome() {
         transcript.removeAll();
         scroll.setVisible(false); transcript.revalidate(); transcript.repaint();
+    }
+    void restore(ConversationStore.Chat chat) {
+        welcome();
+        int start = Math.max(0, chat.turns().size() - 15);
+        for (var turn : chat.turns().subList(start, chat.turns().size())) {
+            message("You", turn.user()).render();
+            Card answer = message(turn.provider(), turn.assistant()); answer.render();
+            if (turn.status() != ConversationStore.Status.COMPLETED)
+                answer.notice((turn.status() == ConversationStore.Status.FAILED ? "Request failed" : "Response interrupted")
+                    + ". This exchange is excluded from resumed context.");
+        }
     }
     void inlineMode() {
         projectContext.setSelected(false);
@@ -378,6 +396,12 @@ final class ChatSurface extends JPanel {
             discard.addActionListener(e -> { actions.removeAll(); actions.add(new JLabel("Suggestions discarded")); revalidate(); repaint(); });
             review.addPropertyChangeListener("enabled", e -> { if (!review.isEnabled()) discard.setEnabled(false); });
             revalidate(); return review;
+        }
+        void notice(String text) {
+            JTextArea note = new JTextArea(text); note.setEditable(false); note.setOpaque(false);
+            note.setLineWrap(true); note.setWrapStyleWord(true); note.setForeground(muted());
+            note.setFont(UIManager.getFont("Label.font").deriveFont(Font.PLAIN, 11f));
+            metadata.add(note, BorderLayout.SOUTH);
         }
         @Override public Dimension getMaximumSize() { return new Dimension(Integer.MAX_VALUE, getPreferredSize().height); }
         @Override public void setBounds(int x, int y, int width, int height) {
